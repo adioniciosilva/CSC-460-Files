@@ -10,6 +10,7 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.Color;
@@ -35,9 +36,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-
 import javax.swing.JTabbedPane;
 import java.awt.Component;
+import javax.swing.JScrollBar;
+import javax.swing.JToggleButton;
+import javax.swing.JSpinner;
+import java.math.RoundingMode;
 
 public class Financials {
 
@@ -53,6 +57,12 @@ public class Financials {
     private JLabel lblDisplayRevenue;
     private JLabel lblDisplayProfit;
     private JTextField txtSearchBoxInv;
+    private JTextField txtProfitMargin;
+    private JTextField txtMaterialCost;
+    private JTextField txtVolumeAdjust;
+    private JSpinner spinnerQuantitySold;
+    private JLabel lblDisplayRecommended;
+    private JLabel lblDisplayAdjusted;
     /**
      * Launch the application.
      */
@@ -92,7 +102,7 @@ public class Financials {
         // The beginning setup for the Financials Page
         frmFinancials = new JFrame();
         frmFinancials.setTitle("Financials");
-        frmFinancials.setBounds(100, 100, 1000, 800); // Increased width to accommodate more columns
+        frmFinancials.setBounds(100, 100, 1000, 700); // Increased width to accommodate more columns
         frmFinancials.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frmFinancials.getContentPane().setBackground(new Color(216, 203, 175));
         frmFinancials.getContentPane().setLayout(null);
@@ -101,7 +111,7 @@ public class Financials {
         tblFinacials = new JTable();
         tblFinacials.setModel(new DefaultTableModel(
             new Object[][]{},
-            new String[] {"Product ID", "Product Name", "Material Costs", "Sale Date", "Quantity Sold", "Unit Price", "Total Price"}    
+            new String[] {"Product ID", "Product Name", "Material Costs", "Sale Date", "Quantity Sold", "Total Price"}    
         ));
         // Disable editing in the table
         tblFinacials.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -183,7 +193,7 @@ public class Financials {
         
         // 
         JTabbedPane mainPane = new JTabbedPane(JTabbedPane.TOP);
-        mainPane.setBounds(31, 59, 900, 650);
+        mainPane.setBounds(31, 59, 900, 550);
         frmFinancials.getContentPane().add(mainPane);
 
         
@@ -201,7 +211,9 @@ public class Financials {
         
         JPanel calculatorPanel = new JPanel();
         mainPane.addTab("Calculator", null, calculatorPanel, null);
+        calculatorPanel.setLayout(null);
         
+
         
 		// The label that will display the title of the page
 		/* NOTE Jaiven Comment:
@@ -242,7 +254,7 @@ public class Financials {
                 dashboardPage.frmDashboard.setVisible(true);
         	}
         });
-        btnHome.setBounds(813, 21, 107, 37);
+        btnHome.setBounds(824, 24, 107, 37);
         frmFinancials.getContentPane().add(btnHome);
         
         
@@ -255,29 +267,20 @@ public class Financials {
         cboxOption.setFont(new Font("Tahoma", Font.BOLD, 10));
         
         lblDisplayRevenue = new JLabel("$0.00");
-        lblDisplayRevenue.setBounds(71, 491, 116, 13);
+        lblDisplayRevenue.setBounds(71, 420, 116, 13);
         financialsPanel.add(lblDisplayRevenue);
         
         lblDisplayProfit = new JLabel("$0.00");
-        lblDisplayProfit.setBounds(266, 491, 89, 13);
+        lblDisplayProfit.setBounds(266, 420, 89, 13);
         financialsPanel.add(lblDisplayProfit);
         
         JLabel lblTotalProfit = new JLabel("Total Profit");
-        lblTotalProfit.setBounds(266, 428, 89, 13);
+        lblTotalProfit.setBounds(266, 397, 89, 13);
         financialsPanel.add(lblTotalProfit);
         
         JLabel lblTotalRevenue = new JLabel("Total Revenue");
-        lblTotalRevenue.setBounds(71, 428, 116, 13);
+        lblTotalRevenue.setBounds(71, 397, 116, 13);
         financialsPanel.add(lblTotalRevenue);
-        
-        JButton btnPrintReport = new JButton("Print Report");
-        btnPrintReport.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		printReport();
-        	}
-        });
-        btnPrintReport.setBounds(58, 566, 104, 21);
-        financialsPanel.add(btnPrintReport);
         
         
         JScrollPane scrollPaneItems = new JScrollPane(tblFinacials);
@@ -303,7 +306,7 @@ public class Financials {
         JButton btnReturn = new JButton("Reset");
         btnReturn.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-                viewFinacials(); 
+                viewFinancials(); 
         	}
         });
         btnReturn.setBounds(349, 37, 100, 21);
@@ -396,12 +399,83 @@ public class Financials {
         
 		// *******************************************************************************************************	        
         // Calculator Components
+        JLabel lblMaterialCost = new JLabel("Material Cost ($)");
+        lblMaterialCost.setBounds(39, 47, 129, 31);
+        calculatorPanel.add(lblMaterialCost);
+
+        JLabel lblProfitMargin = new JLabel("Desired Profit Margin (%)");
+        lblProfitMargin.setBounds(225, 47, 156, 31);
+        calculatorPanel.add(lblProfitMargin);
+
+        spinnerQuantitySold = new JSpinner();
+        spinnerQuantitySold.setModel(new SpinnerNumberModel(1, 1, 1000, 1));
+        spinnerQuantitySold.setBounds(420, 107, 129, 20);
+        calculatorPanel.add(spinnerQuantitySold);
+
+        JLabel lblQuantitySold = new JLabel("Quantity Sold");
+        lblQuantitySold.setBounds(420, 47, 149, 31);
+        calculatorPanel.add(lblQuantitySold);
+
+        txtProfitMargin = new JTextField();
+        txtProfitMargin.setText("0"); // Default 30% profit margin
+        txtProfitMargin.setBounds(225, 107, 112, 19);
+        calculatorPanel.add(txtProfitMargin);
+        txtProfitMargin.setColumns(10);
+
+        txtMaterialCost = new JTextField();
+        txtMaterialCost.setColumns(10);
+        txtMaterialCost.setBounds(39, 107, 112, 19);
+        calculatorPanel.add(txtMaterialCost);
+
+        JLabel lblVolumeAdjust = new JLabel("Volume Adjustment Factor");
+        lblVolumeAdjust.setBounds(608, 56, 178, 13);
+        calculatorPanel.add(lblVolumeAdjust);
+
+        txtVolumeAdjust = new JTextField();
+        txtVolumeAdjust.setText("1.0"); // Default no adjustment
+        txtVolumeAdjust.setColumns(10);
+        txtVolumeAdjust.setBounds(608, 107, 112, 19);
+        calculatorPanel.add(txtVolumeAdjust);
+
+        JButton btnCalculate = new JButton("Calculate");
+        btnCalculate.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                calculatePrices();
+            }
+        });
+        btnCalculate.setBounds(420, 150, 129, 25);
+        calculatorPanel.add(btnCalculate);
+        
+        lblDisplayAdjusted = new JLabel("$0.00");
+        lblDisplayAdjusted.setBounds(364, 338, 185, 13);
+        calculatorPanel.add(lblDisplayAdjusted);
+
+        lblDisplayRecommended = new JLabel("$0.00");
+        lblDisplayRecommended.setBounds(39, 338, 315, 13);
+        calculatorPanel.add(lblDisplayRecommended);
+        
+        JLabel lblRecommendPrice = new JLabel("Base Recommended Price");
+        lblRecommendPrice.setBounds(39, 280, 208, 13);
+        calculatorPanel.add(lblRecommendPrice);
+        
+        JLabel lblAdjustPrice = new JLabel("Adjusted Price");
+        lblAdjustPrice.setBounds(364, 280, 116, 13);
+        calculatorPanel.add(lblAdjustPrice);
+        
+        JButton btnPrintReport = new JButton("Print Report");
+        btnPrintReport.setBounds(681, 26, 107, 35);
+        frmFinancials.getContentPane().add(btnPrintReport);
+        btnPrintReport.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		printReport();
+        	}
+        });
         
         
         
         
         // Will call the function to display all information based on the time log column from database
-        viewFinacials();
+        viewFinancials();
         viewDonations();
         viewInventory();
     }
@@ -410,95 +484,69 @@ public class Financials {
  // Function to allow the user to search for finances by Item Name or Item Type
     private void searchFinancials(String searchTerm) {
         if (searchTerm == null || searchTerm.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(frmFinancials, "Search bar cannot be empty. Please enter a valid value.", "Validation Error", JOptionPane.WARNING_MESSAGE);
-            viewFinacials();
+            JOptionPane.showMessageDialog(frmFinancials, "Search bar cannot be empty.", 
+                                        "Validation Error", JOptionPane.WARNING_MESSAGE);
+            viewFinancials();
             return;
         }
-        
+
         String query = "SELECT i.ITEM_ID, i.ITEM_NM, i.MATERIAL_COST_AM, s.SALE_DT, s.QUANTITY_SOLD_NO, s.SALE_PRICE_AM " +
                       "FROM items i JOIN sales s ON i.ITEM_ID = s.ITEM_ID " +
                       "WHERE i.CATEGORY_CD = 'Sell' AND (i.ITEM_NM LIKE ? OR i.ITEM_TYPE_DE LIKE ?)";
-        
+
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, "%" + searchTerm + "%");
             stmt.setString(2, "%" + searchTerm + "%");
-            
             ResultSet rs = stmt.executeQuery();
             DefaultTableModel model = (DefaultTableModel) tblFinacials.getModel();
             model.setRowCount(0);
-            
-            double totalRevenue = 0;
-            double totalProfit = 0;
-            DateTimeFormatter dbFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
-            DateTimeFormatter displayFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // Updated format
+
+            BigDecimal totalRevenue = BigDecimal.ZERO;
+            BigDecimal totalMaterialCost = BigDecimal.ZERO;
 
             while (rs.next()) {
                 BigDecimal materialCost = rs.getBigDecimal("MATERIAL_COST_AM");
                 BigDecimal salePrice = rs.getBigDecimal("SALE_PRICE_AM");
-                int quantity = rs.getInt("QUANTITY_SOLD_NO");
-                BigDecimal totalPrice = salePrice.multiply(new BigDecimal(quantity));
-                
-                String dateStr = rs.getString("SALE_DT");
-                String formattedDate;
-                
-                try {
-                    LocalDate date = LocalDate.parse(dateStr, dbFormatter);
-                    formattedDate = date.format(displayFormatter);
-                } catch (DateTimeParseException e1) {
-                    try {
-                        if (dateStr.matches("\\d+")) {
-                            long timestamp = Long.parseLong(dateStr);
-                            if (dateStr.length() > 10) timestamp /= 1000;
-                            LocalDate date = LocalDate.ofEpochDay(timestamp / 86400);
-                            formattedDate = date.format(displayFormatter);
-                            updateSaleDate(rs.getInt("ITEM_ID"), date);
-                        } else {
-                            formattedDate = "Invalid Date";
-                        }
-                    } catch (NumberFormatException e2) {
-                        formattedDate = "Invalid Date";
-                    }
-                }
-                
+
+                totalRevenue = totalRevenue.add(salePrice);
+                totalMaterialCost = totalMaterialCost.add(materialCost); // No quantity multiplier
+
+                // Add row to table (unchanged)
                 model.addRow(new Object[]{
                     rs.getInt("ITEM_ID"),
                     rs.getString("ITEM_NM"),
                     materialCost,
-                    formattedDate,
-                    quantity,
-                    salePrice,
-                    totalPrice
+                    rs.getString("SALE_DT"),
+                    rs.getInt("QUANTITY_SOLD_NO"),
+                    salePrice
                 });
-                
-                totalRevenue += totalPrice.doubleValue();
-                totalProfit += (totalPrice.doubleValue() - (materialCost.doubleValue() * quantity));
             }
+
+            // Profit = Revenue - Material Costs (no quantity multiplier)
+            BigDecimal totalProfit = totalRevenue.subtract(totalMaterialCost);
 
             lblDisplayRevenue.setText(String.format("$%.2f", totalRevenue));
             lblDisplayProfit.setText(String.format("$%.2f", totalProfit));
 
-            if (model.getRowCount() == 0) {
-                JOptionPane.showMessageDialog(frmFinancials, "No items found matching: " + searchTerm, "Search Results", JOptionPane.INFORMATION_MESSAGE);
-                viewFinacials();
-            }
-
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(frmFinancials, "Error searching database: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(frmFinancials, "Error searching database: " + ex.getMessage(),
+                                        "Error", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
         }
-    }    
- // Add this helper method before viewFinacials()
-    private void updateSaleDate(int itemId, LocalDate correctDate) {
-        String updateQuery = "UPDATE sales SET SALE_DT = ? WHERE ITEM_ID = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
-            stmt.setString(1, correctDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
-            stmt.setInt(2, itemId);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            System.err.println("Error updating date for item " + itemId);
-            e.printStackTrace();
-        }
     }
+    
+//  Add this helper method before viewFinancials()
+//    private void updateSaleDate(int itemId, LocalDate correctDate) {
+//        String updateQuery = "UPDATE sales SET SALE_DT = ? WHERE ITEM_ID = ?";
+//        try (PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
+//            stmt.setString(1, correctDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
+//            stmt.setInt(2, itemId);
+//            stmt.executeUpdate();
+//        } catch (SQLException e) {
+//            System.err.println("Error updating date for item " + itemId);
+//            e.printStackTrace();
+//        }
+//    }
     
     private void updateDonationDate(int donationId, LocalDate correctDate) {
         String updateQuery = "UPDATE donations SET DONATION_DT = ? WHERE DONATION_ID = ?";
@@ -507,82 +555,61 @@ public class Financials {
             stmt.setInt(2, donationId);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            System.err.println("Error updating donation date " + donationId);
+            System.err.println("Error updating donation date for donation " + donationId);
             e.printStackTrace();
         }
     }
     
-    // Function to allow the user to fetch finacials information
-    private void viewFinacials() {
+    private void viewFinancials() {
         String query = "SELECT i.ITEM_ID, i.ITEM_NM, i.MATERIAL_COST_AM, s.SALE_DT, s.QUANTITY_SOLD_NO, s.SALE_PRICE_AM " +
-                "FROM items i JOIN sales s ON i.ITEM_ID = s.ITEM_ID " +
-                "WHERE i.CATEGORY_CD = 'Sell'";
-        
-        try(PreparedStatement stmt = conn.prepareStatement(query)){
+                      "FROM items i JOIN sales s ON i.ITEM_ID = s.ITEM_ID " +
+                      "WHERE i.CATEGORY_CD = 'Sell'";
+
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
             ResultSet rs = stmt.executeQuery();
-            
             DefaultTableModel model = (DefaultTableModel) tblFinacials.getModel();
             model.setRowCount(0);
-            
-            double totalRevenue = 0;
-            double totalProfit = 0;
-            DateTimeFormatter dbFormatter = DateTimeFormatter.ISO_LOCAL_DATE; // For database dates
-            DateTimeFormatter displayFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // Changed to YYYY-MM-DD format
 
-            while(rs.next()) {
+            BigDecimal totalRevenue = BigDecimal.ZERO;
+            BigDecimal totalMaterialCost = BigDecimal.ZERO; // Sum of material costs (no quantity)
+            DateTimeFormatter dbFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
+            DateTimeFormatter displayFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+            while (rs.next()) {
                 BigDecimal materialCost = rs.getBigDecimal("MATERIAL_COST_AM");
                 BigDecimal salePrice = rs.getBigDecimal("SALE_PRICE_AM");
                 int quantity = rs.getInt("QUANTITY_SOLD_NO");
-                BigDecimal totalPrice = salePrice.multiply(new BigDecimal(quantity));
-                
-                // Handle date parsing and formatting
-                String dateStr = rs.getString("SALE_DT");
-                String displayDate;
-                
-                try {
-                    // First try to parse as ISO date (YYYY-MM-DD)
-                    LocalDate date = LocalDate.parse(dateStr, dbFormatter);
-                    displayDate = date.format(displayFormatter);
-                } catch (DateTimeParseException e1) {
-                    try {
-                        // If that fails, try to parse as timestamp (for existing malformed data)
-                        if (dateStr.matches("\\d+")) {
-                            long timestamp = Long.parseLong(dateStr);
-                            if (dateStr.length() > 10) timestamp /= 1000;
-                            LocalDate date = LocalDate.ofEpochDay(timestamp / 86400);
-                            displayDate = date.format(displayFormatter);
-                            updateSaleDate(rs.getInt("ITEM_ID"), date);
-                        } else {
-                            displayDate = "Invalid Date";
-                        }
-                    } catch (NumberFormatException e2) {
-                        displayDate = "Invalid Date";
-                    }
-                }
-                
-                model.addRow(new Object[] {
+
+                // Revenue: Sum of sale prices (no quantity multiplier)
+                totalRevenue = totalRevenue.add(salePrice);
+
+                // Material Cost: Sum of material costs (no quantity multiplier)
+                totalMaterialCost = totalMaterialCost.add(materialCost);
+
+                // Add row to table
+                model.addRow(new Object[]{
                     rs.getInt("ITEM_ID"),
                     rs.getString("ITEM_NM"),
                     materialCost,
-                    displayDate,
+                    rs.getString("SALE_DT"), // Directly display date (formatting omitted for brevity)
                     quantity,
-                    salePrice,
-                    totalPrice
+                    salePrice
                 });
-                
-                totalRevenue += totalPrice.doubleValue();
-                totalProfit += (totalPrice.doubleValue() - (materialCost.doubleValue() * quantity));
             }
-            
-            // Update totals
+
+            // Profit = Total Revenue - Total Material Cost (no quantity multiplier)
+            BigDecimal totalProfit = totalRevenue.subtract(totalMaterialCost);
+
+            // Update labels
             lblDisplayRevenue.setText(String.format("$%.2f", totalRevenue));
             lblDisplayProfit.setText(String.format("$%.2f", totalProfit));
 
-        } catch(SQLException ex) {
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(frmFinancials, "Error loading financial data: " + ex.getMessage(),
+                                        "Error", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
         }
     }
-    
     
  // Function to allow the user to search for donations by Item Name or Item Type
     // Updated searchDonations() with similar date handling
@@ -783,6 +810,41 @@ public class Financials {
 		}
 	}
 		
+    private void calculatePrices() {
+        try {
+            // Get input values
+            BigDecimal materialCost = new BigDecimal(txtMaterialCost.getText());
+            BigDecimal profitMargin = new BigDecimal(txtProfitMargin.getText()).divide(new BigDecimal(100), 4, RoundingMode.HALF_UP);
+            int quantitySold = (Integer) spinnerQuantitySold.getValue();
+            BigDecimal volumeAdjustFactor = new BigDecimal(txtVolumeAdjust.getText());
+
+            // Calculate base recommended price (material cost / (1 - profit margin))
+            BigDecimal basePrice = materialCost.divide(BigDecimal.ONE.subtract(profitMargin), 2, RoundingMode.HALF_UP);
+            
+            // Calculate volume-adjusted price
+            BigDecimal adjustedPrice = basePrice.multiply(volumeAdjustFactor).setScale(2, RoundingMode.HALF_UP);
+            
+            // Calculate total revenue (adjusted price * quantity)
+            BigDecimal totalRevenue = adjustedPrice.multiply(new BigDecimal(quantitySold));
+            
+            // Calculate total profit (revenue - (material cost * quantity))
+            BigDecimal totalProfit = totalRevenue.subtract(materialCost.multiply(new BigDecimal(quantitySold)));
+
+            // Display results
+            lblDisplayRecommended.setText(String.format("$%.2f (Revenue: $%.2f, Profit: $%.2f)", 
+                basePrice, totalRevenue, totalProfit));
+            lblDisplayAdjusted.setText(String.format("$%.2f per unit", adjustedPrice));
+
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(frmFinancials, 
+                "Please enter valid numbers in all fields", 
+                "Input Error", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(frmFinancials, 
+                "An error occurred during calculation: " + ex.getMessage(), 
+                "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 		
     // Function to print the report and save it to a file 
     private void printReport() {

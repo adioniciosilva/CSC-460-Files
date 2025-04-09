@@ -16,6 +16,7 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import javax.swing.JComboBox;
@@ -262,6 +263,7 @@ public class Products {
         panelAddProd.add(lblProductQuantity);
         
         spinnerProductQuantity = new JSpinner();
+        spinnerProductQuantity.setModel(new SpinnerNumberModel(1, 1, 1000, 1));
         spinnerProductQuantity.setToolTipText("Enter the number of products if applicable");
         spinnerProductQuantity.setBounds(276, 355, 179, 20);
         panelAddProd.add(spinnerProductQuantity);
