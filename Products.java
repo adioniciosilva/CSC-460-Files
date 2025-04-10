@@ -35,11 +35,11 @@ import java.awt.FontFormatException;
 import javax.swing.JSpinner;
 
 public class Products {
-    // Database connection variables
+	// Database connection variables
     Connection conn = null;
-    // Connection based on SQLite within the Project Folder
-    String dbConnect = "jdbc:sqlite:../project/database/mamaspiddlins.sqlite";
-    
+//  // Connection based on SQLite within the Project Folder
+//  String dbConnect = "jdbc:sqlite:../project/database/mamaspiddlins.sqlite";
+
     
     public JFrame frmProducts;
     public JTable tblFinacials;
@@ -74,15 +74,27 @@ public class Products {
     }
 
     public Products() {
-        try {
-            conn = DriverManager.getConnection(dbConnect);
-            System.out.println("Connection successful");
-        } catch(SQLException e) {
-            System.out.println("An error has occurred during connection");
-            e.printStackTrace();
-        }
-        initialize();
-    }
+	    try {
+	        Class.forName("org.sqlite.JDBC");
+	        // Fix the path as suggested above
+	        String dbPath = new File("database/mamaspiddlins.sqlite").getAbsolutePath();
+	        conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
+	        
+	        if (conn != null) {
+	            System.out.println("Connection successful");
+	            initialize();
+	        } else {
+	            JOptionPane.showMessageDialog(null, "Failed to connect to database", 
+	                "Error", JOptionPane.ERROR_MESSAGE);
+	            System.exit(1);
+	        }
+	    } catch (SQLException | ClassNotFoundException e) {
+	        JOptionPane.showMessageDialog(null, "Database error: " + e.getMessage(), 
+	            "Error", JOptionPane.ERROR_MESSAGE);
+	        e.printStackTrace();
+	        System.exit(1);
+	    }
+	}
 
     private void initialize() {
 		// The beginning setup for the Products Page
@@ -385,9 +397,29 @@ public class Products {
         JButton btnDeleteProduct = new JButton("Delete Product");
         btnDeleteProduct.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                deleteProduct(Integer.parseInt(txtProductDelId.getText()));
+                String input = txtProductDelId.getText().trim();
+                
+                // Validate input before parsing
+                if (input.isEmpty()) {
+                    JOptionPane.showMessageDialog(frmProducts, 
+                        "Search bar cannot be empty. Please enter a numeric value.",
+                        "Validation Error",
+                        JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                
+                try {
+                    int productId = Integer.parseInt(input);
+                    deleteProduct(productId);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(frmProducts, 
+                        "Search bar cannot be empty. Please enter a numeric value.",
+                        "Validation Error",
+                        JOptionPane.WARNING_MESSAGE);
+                }
             }
         });
+
         btnDeleteProduct.setBounds(194, 386, 124, 21);
         panelDeleteProd.add(btnDeleteProduct);
         
@@ -425,7 +457,7 @@ public class Products {
         String productIdStr = txtProductId.getText().trim();
         
         if (productIdStr.isEmpty()) {
-            JOptionPane.showMessageDialog(frmProducts, "Please enter a Product ID", 
+            JOptionPane.showMessageDialog(frmProducts, "Search bar cannot be empty. Please enter a valid value.", 
                 "Validation Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -681,9 +713,11 @@ public class Products {
 
     // First check if the product exists
         private void deleteProduct(int productDelete) {
-            if (productDelete == 0) {
-                JOptionPane.showMessageDialog(frmProducts, "Product ID cannot be zero or empty.", 
-                    "Validation Error", JOptionPane.WARNING_MESSAGE);
+            if (productDelete <= 0) {
+                JOptionPane.showMessageDialog(frmProducts, 
+                    "Product ID must be a positive number. Please enter a valid ID.",
+                    "Validation Error", 
+                    JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
@@ -704,13 +738,7 @@ public class Products {
                 // Disable auto-commit to handle as a transaction
                 conn.setAutoCommit(false);
 
-                // Delete order is important due to foreign key constraints:
-                // 1. First delete from financials (though your sample data shows none)
-                // 2. Then delete from sales (which financials references)
-                // 3. Then delete from donations
-                // 4. Then delete from time_logs
-                // 5. Finally delete from items
-
+                // Delete order is based on foreign key constraints
                 // Delete from financials (if any exist)
                 String deleteFinancials = "DELETE FROM financials WHERE SALE_ID IN (SELECT SALE_ID FROM sales WHERE ITEM_ID = ?)";
                 try (PreparedStatement pst = conn.prepareStatement(deleteFinancials)) {

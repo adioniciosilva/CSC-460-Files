@@ -29,10 +29,10 @@ import javax.swing.JLabel;
 
 public class TimeLog {
 
-    // Database connection variables
-	Connection conn = null;
-    // Connection based on SQLite within the Project Folder
-    String dbConnect = "jdbc:sqlite:../project/database/mamaspiddlins.sqlite";
+	// Database connection variables
+    Connection conn = null;
+//  // Connection based on SQLite within the Project Folder
+//  String dbConnect = "jdbc:sqlite:../project/database/mamaspiddlins.sqlite";
 
 	
 	public JFrame frmTimeLog;
@@ -58,15 +58,26 @@ public class TimeLog {
 	 * Create the application.
 	 */
 	public TimeLog() {
-		try {
-			conn = DriverManager.getConnection(dbConnect);
-			System.out.println("Connection successful");
-		}
-		catch(SQLException e) {
-			System.out.println("An error has occured during conection");
-			e.printStackTrace();
-		}
-		initialize();
+	    try {
+	        Class.forName("org.sqlite.JDBC");
+	        // Fix the path as suggested above
+	        String dbPath = new File("database/mamaspiddlins.sqlite").getAbsolutePath();
+	        conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
+	        
+	        if (conn != null) {
+	            System.out.println("Connection successful");
+	            initialize();
+	        } else {
+	            JOptionPane.showMessageDialog(null, "Failed to connect to database", 
+	                "Error", JOptionPane.ERROR_MESSAGE);
+	            System.exit(1);
+	        }
+	    } catch (SQLException | ClassNotFoundException e) {
+	        JOptionPane.showMessageDialog(null, "Database error: " + e.getMessage(), 
+	            "Error", JOptionPane.ERROR_MESSAGE);
+	        e.printStackTrace();
+	        System.exit(1);
+	    }
 	}
 
 	/**

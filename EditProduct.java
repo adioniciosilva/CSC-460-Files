@@ -12,13 +12,14 @@ import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.awt.event.ActionEvent;
 import javax.swing.JSpinner;
 
 public class EditProduct {
     // Database connection variables
     Connection conn = null;
-    String dbConnect = "jdbc:sqlite:../project/database/mamaspiddlins.sqlite";
+//    String dbConnect = "jdbc:sqlite:../project/database/mamaspiddlins.sqlite";
     
     public JFrame frmEditProduct;
     private JTextField txtProdName;
@@ -54,14 +55,27 @@ public class EditProduct {
             String status, String category, double materialCost, 
             String coozieSize, int quantity) {
 		this.currentProductId = productId;
-			try {
-			  conn = DriverManager.getConnection(dbConnect);
-			  System.out.println("Connection successful");
-			} catch(SQLException e) {
-			  System.out.println("An error has occurred during connection");
-			  e.printStackTrace();
-			}
-			initialize();
+	    try {
+	        Class.forName("org.sqlite.JDBC");
+	        // Fix the path as suggested above
+	        String dbPath = new File("database/mamaspiddlins.sqlite").getAbsolutePath();
+	        conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
+	        
+	        if (conn != null) {
+	            System.out.println("Connection successful");
+	            initialize();
+	        } else {
+	            JOptionPane.showMessageDialog(null, "Failed to connect to database", 
+	                "Error", JOptionPane.ERROR_MESSAGE);
+	            System.exit(1);
+	        }
+	    } catch (SQLException | ClassNotFoundException e) {
+	        JOptionPane.showMessageDialog(null, "Database error: " + e.getMessage(), 
+	            "Error", JOptionPane.ERROR_MESSAGE);
+	        e.printStackTrace();
+	        System.exit(1);
+	    }
+	
 
 		// Set the fields with the product data
 		txtProdName.setText(name);

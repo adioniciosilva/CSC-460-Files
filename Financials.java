@@ -45,11 +45,11 @@ import java.math.RoundingMode;
 
 public class Financials {
 
-    // Database connection variables
+	// Database connection variables
     Connection conn = null;
-    // Connection based on SQLite within the Project Folder
-    String dbConnect = "jdbc:sqlite:../project/database/mamaspiddlins.sqlite";
-    
+//  // Connection based on SQLite within the Project Folder
+//  String dbConnect = "jdbc:sqlite:../project/database/mamaspiddlins.sqlite";
+
     public JFrame frmFinancials;
     public JTable tblFinacials;
     public JTable tblDonations;
@@ -84,14 +84,25 @@ public class Financials {
      */
     public Financials() {
         try {
-            conn = DriverManager.getConnection(dbConnect);
-            System.out.println("Connection successful");
-        }
-        catch(SQLException e) {
-            System.out.println("An error has occured during conection");
+            Class.forName("org.sqlite.JDBC");
+            // Fix the path as suggested above
+            String dbPath = new File("database/mamaspiddlins.sqlite").getAbsolutePath();
+            conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
+            
+            if (conn != null) {
+                System.out.println("Connection successful");
+                initialize();
+            } else {
+                JOptionPane.showMessageDialog(null, "Failed to connect to database", 
+                    "Error", JOptionPane.ERROR_MESSAGE);
+                System.exit(1);
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            JOptionPane.showMessageDialog(null, "Database error: " + e.getMessage(), 
+                "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
+            System.exit(1);
         }
-        initialize();
     }
 
     /**
@@ -266,21 +277,59 @@ public class Financials {
         cboxOption.setSelectedIndex(2);
         cboxOption.setFont(new Font("Tahoma", Font.BOLD, 10));
         
+        // The label that will display the total revenue price
         lblDisplayRevenue = new JLabel("$0.00");
-        lblDisplayRevenue.setBounds(71, 420, 116, 13);
+        try {
+            Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
+            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
+            lblDisplayRevenue.setFont(caveatBrush);
+        } catch (IOException | FontFormatException e) {
+        	lblDisplayRevenue.setFont(new Font("Tahoma", Font.BOLD, 23)); 
+            e.printStackTrace();
+        }
+        lblDisplayRevenue.setBounds(71, 420, 116, 21);
         financialsPanel.add(lblDisplayRevenue);
         
+        // The label that will display the total profit price
         lblDisplayProfit = new JLabel("$0.00");
-        lblDisplayProfit.setBounds(266, 420, 89, 13);
+        try {
+            Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
+            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
+            lblDisplayProfit.setFont(caveatBrush);
+        } catch (IOException | FontFormatException e) {
+        	lblDisplayRevenue.setFont(new Font("Tahoma", Font.BOLD, 23)); 
+            e.printStackTrace();
+        }
+        lblDisplayProfit.setBounds(266, 420, 89, 21);
         financialsPanel.add(lblDisplayProfit);
+
         
+		// The label that will display the total profit		
         JLabel lblTotalProfit = new JLabel("Total Profit");
-        lblTotalProfit.setBounds(266, 397, 89, 13);
-        financialsPanel.add(lblTotalProfit);
+        try {
+            Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
+            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
+            lblTotalProfit.setFont(caveatBrush);
+        } catch (IOException | FontFormatException e) {
+        	lblTotalProfit.setFont(new Font("Tahoma", Font.BOLD, 23)); 
+            e.printStackTrace();
+        }
+        lblTotalProfit.setBounds(266, 385, 89, 25);
+        financialsPanel.add(lblTotalProfit);	
         
+        
+		// The label that will display the total revenue		
         JLabel lblTotalRevenue = new JLabel("Total Revenue");
-        lblTotalRevenue.setBounds(71, 397, 116, 13);
-        financialsPanel.add(lblTotalRevenue);
+        try {
+            Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
+            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
+            lblTotalRevenue.setFont(caveatBrush);
+        } catch (IOException | FontFormatException e) {
+        	lblTotalRevenue.setFont(new Font("Tahoma", Font.BOLD, 23)); 
+            e.printStackTrace();
+        }
+        lblTotalRevenue.setBounds(71, 385, 116, 25);
+        financialsPanel.add(lblTotalRevenue);	
         
         
         JScrollPane scrollPaneItems = new JScrollPane(tblFinacials);
@@ -313,11 +362,9 @@ public class Financials {
         financialsPanel.add(btnReturn);
         btnReturn.setFont(new Font("Dialog", Font.BOLD, 12));
         
- 
         
 		// *******************************************************************************************************	        
-        // Donation Components
-
+        // Donation Components     
         
         JScrollPane scrollPaneDonations = new JScrollPane(tblDonations);
         scrollPaneDonations.setBounds(29, 79, 866, 335);
@@ -363,6 +410,7 @@ public class Financials {
         
 		// *******************************************************************************************************	        
         // Donation Components
+        
         JScrollPane scrollPaneInventory = new JScrollPane(tblInventory);
         scrollPaneInventory.setForeground(Color.WHITE);
         scrollPaneInventory.setBounds(29, 76, 856, 335);
@@ -395,72 +443,146 @@ public class Financials {
         
         
         
-        
-        
 		// *******************************************************************************************************	        
         // Calculator Components
+        
+        
         JLabel lblMaterialCost = new JLabel("Material Cost ($)");
+        try {
+            Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
+            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
+            lblMaterialCost.setFont(caveatBrush);
+        } catch (IOException | FontFormatException e) {
+        	lblDisplayRevenue.setFont(new Font("Tahoma", Font.BOLD, 23)); 
+            e.printStackTrace();
+        }
         lblMaterialCost.setBounds(39, 47, 129, 31);
         calculatorPanel.add(lblMaterialCost);
+        
+
 
         JLabel lblProfitMargin = new JLabel("Desired Profit Margin (%)");
-        lblProfitMargin.setBounds(225, 47, 156, 31);
+        try {
+            Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
+            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
+            lblProfitMargin.setFont(caveatBrush);
+        } catch (IOException | FontFormatException e) {
+        	lblDisplayRevenue.setFont(new Font("Tahoma", Font.BOLD, 23)); 
+            e.printStackTrace();
+        }
+        lblProfitMargin.setBounds(225, 47, 199, 31);
         calculatorPanel.add(lblProfitMargin);
-
+        
+        
         spinnerQuantitySold = new JSpinner();
         spinnerQuantitySold.setModel(new SpinnerNumberModel(1, 1, 1000, 1));
-        spinnerQuantitySold.setBounds(420, 107, 129, 20);
+        spinnerQuantitySold.setBounds(434, 107, 129, 20);
         calculatorPanel.add(spinnerQuantitySold);
 
+        
         JLabel lblQuantitySold = new JLabel("Quantity Sold");
-        lblQuantitySold.setBounds(420, 47, 149, 31);
+        try {
+            Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
+            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
+            lblQuantitySold.setFont(caveatBrush);
+        } catch (IOException | FontFormatException e) {
+        	lblQuantitySold.setFont(new Font("Tahoma", Font.BOLD, 23)); 
+            e.printStackTrace();
+        }
+        lblQuantitySold.setBounds(434, 47, 149, 31);
         calculatorPanel.add(lblQuantitySold);
+        
 
         txtProfitMargin = new JTextField();
-        txtProfitMargin.setText("0"); // Default 30% profit margin
-        txtProfitMargin.setBounds(225, 107, 112, 19);
+        txtProfitMargin.setText("0"); 
+        txtProfitMargin.setBounds(225, 107, 149, 19);
         calculatorPanel.add(txtProfitMargin);
         txtProfitMargin.setColumns(10);
 
         txtMaterialCost = new JTextField();
         txtMaterialCost.setColumns(10);
-        txtMaterialCost.setBounds(39, 107, 112, 19);
+        txtMaterialCost.setBounds(39, 107, 143, 19);
         calculatorPanel.add(txtMaterialCost);
-
-        JLabel lblVolumeAdjust = new JLabel("Volume Adjustment Factor");
-        lblVolumeAdjust.setBounds(608, 56, 178, 13);
+        
+        
+        JLabel lblVolumeAdjust = new JLabel("Material Cost ($)");
+        try {
+            Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
+            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
+            lblVolumeAdjust.setFont(caveatBrush);
+        } catch (IOException | FontFormatException e) {
+        	lblVolumeAdjust.setFont(new Font("Tahoma", Font.BOLD, 23)); 
+            e.printStackTrace();
+        }
+        lblVolumeAdjust.setBounds(620, 56, 178, 13);
         calculatorPanel.add(lblVolumeAdjust);
 
         txtVolumeAdjust = new JTextField();
         txtVolumeAdjust.setText("1.0"); // Default no adjustment
         txtVolumeAdjust.setColumns(10);
-        txtVolumeAdjust.setBounds(608, 107, 112, 19);
+        txtVolumeAdjust.setBounds(620, 107, 112, 19);
         calculatorPanel.add(txtVolumeAdjust);
-
-        JButton btnCalculate = new JButton("Calculate");
-        btnCalculate.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                calculatePrices();
-            }
-        });
-        btnCalculate.setBounds(420, 150, 129, 25);
-        calculatorPanel.add(btnCalculate);
         
-        lblDisplayAdjusted = new JLabel("$0.00");
+
+        JLabel lblDisplayAdjusted = new JLabel("$0.00");
+        try {
+            Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
+            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
+            lblDisplayAdjusted.setFont(caveatBrush);
+        } catch (IOException | FontFormatException e) {
+        	lblDisplayAdjusted.setFont(new Font("Tahoma", Font.BOLD, 23)); 
+            e.printStackTrace();
+        }
         lblDisplayAdjusted.setBounds(364, 338, 185, 13);
         calculatorPanel.add(lblDisplayAdjusted);
-
-        lblDisplayRecommended = new JLabel("$0.00");
+        
+        
+        JLabel lblDisplayRecommended = new JLabel("$0.00");
+        try {
+            Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
+            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
+            lblDisplayRecommended.setFont(caveatBrush);
+        } catch (IOException | FontFormatException e) {
+        	lblDisplayRecommended.setFont(new Font("Tahoma", Font.BOLD, 23)); 
+            e.printStackTrace();
+        }
         lblDisplayRecommended.setBounds(39, 338, 315, 13);
         calculatorPanel.add(lblDisplayRecommended);
         
-        JLabel lblRecommendPrice = new JLabel("Base Recommended Price");
-        lblRecommendPrice.setBounds(39, 280, 208, 13);
+        JLabel lblRecommendPrice = new JLabel("Material Cost ($)");
+        try {
+            Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
+            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
+            lblRecommendPrice.setFont(caveatBrush);
+        } catch (IOException | FontFormatException e) {
+        	lblRecommendPrice.setFont(new Font("Tahoma", Font.BOLD, 23)); 
+            e.printStackTrace();
+        }
+        lblRecommendPrice.setBounds(39, 280, 208, 31);
         calculatorPanel.add(lblRecommendPrice);
         
-        JLabel lblAdjustPrice = new JLabel("Adjusted Price");
-        lblAdjustPrice.setBounds(364, 280, 116, 13);
+        
+        JLabel lblAdjustPrice = new JLabel("Material Cost ($)");
+        try {
+            Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
+            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
+            lblAdjustPrice.setFont(caveatBrush);
+        } catch (IOException | FontFormatException e) {
+        	lblAdjustPrice.setFont(new Font("Tahoma", Font.BOLD, 23)); 
+            e.printStackTrace();
+        }
+        lblAdjustPrice.setBounds(364, 280, 185, 31);
         calculatorPanel.add(lblAdjustPrice);
+        
+                JButton btnCalculate = new JButton("Calculate");
+                btnCalculate.setBounds(39, 189, 107, 37);
+                calculatorPanel.add(btnCalculate);
+                btnCalculate.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        calculatePrices();
+                    }
+                });
+
         
         JButton btnPrintReport = new JButton("Print Report");
         btnPrintReport.setBounds(681, 26, 107, 35);
@@ -470,18 +592,14 @@ public class Financials {
         		printReport();
         	}
         });
-        
-        
-        
-        
+       
         // Will call the function to display all information based on the time log column from database
         viewFinancials();
         viewDonations();
         viewInventory();
     }
     
-    // Function to allow the user to search for finances 
- // Function to allow the user to search for finances by Item Name or Item Type
+ // Function to allow the user to search for finances by item name or item type
     private void searchFinancials(String searchTerm) {
         if (searchTerm == null || searchTerm.trim().isEmpty()) {
             JOptionPane.showMessageDialog(frmFinancials, "Search bar cannot be empty.", 
