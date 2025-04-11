@@ -37,13 +37,9 @@ import javax.swing.JSpinner;
 public class Products {
 	// Database connection variables
     Connection conn = null;
-//  // Connection based on SQLite within the Project Folder
-//  String dbConnect = "jdbc:sqlite:../project/database/mamaspiddlins.sqlite";
 
-    
+    // Declaring variable types
     public JFrame frmProducts;
-    public JTable tblFinacials;
-    public JTable tblTime;
     public JTable tblList;
     public JTable tblProducts;
     private JSpinner spinnerProductQuantity;
@@ -73,6 +69,7 @@ public class Products {
         });
     }
 
+
     public Products() {
 	    try {
 	        Class.forName("org.sqlite.JDBC");
@@ -96,6 +93,10 @@ public class Products {
 	    }
 	}
 
+    /**
+     * Initialize the contents of the frame.
+     * @wbp.parser.entryPoint
+     */
     private void initialize() {
 		// The beginning setup for the Products Page
 		frmProducts = new JFrame();
@@ -499,9 +500,6 @@ public class Products {
             ResultSet rs = stmt.executeQuery();
             
             if (rs.next()) {
-                // Get date as string directly
-                String dateStr = rs.getString("DATE_CREATED_DT");
-                
                 EditProduct editWindow = new EditProduct(
                 	    rs.getInt("ITEM_ID"),
                 	    rs.getString("ITEM_NM"),

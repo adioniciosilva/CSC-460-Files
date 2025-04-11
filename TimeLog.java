@@ -31,10 +31,8 @@ public class TimeLog {
 
 	// Database connection variables
     Connection conn = null;
-//  // Connection based on SQLite within the Project Folder
-//  String dbConnect = "jdbc:sqlite:../project/database/mamaspiddlins.sqlite";
 
-	
+    // Declaring variable types
 	public JFrame frmTimeLog;
 	private JTable tblTime;
 	
@@ -54,9 +52,6 @@ public class TimeLog {
 		});
 	}
 
-	/**
-	 * Create the application.
-	 */
 	public TimeLog() {
 	    try {
 	        Class.forName("org.sqlite.JDBC");
@@ -82,6 +77,7 @@ public class TimeLog {
 
 	/**
 	 * Initialize the contents of the frame.
+	 * @wbp.parser.entryPoint
 	 */
 	private void initialize() {
 		// Has to be initialized first before the rest to load the data

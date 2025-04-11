@@ -3,7 +3,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import javax.swing.JComboBox;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -31,15 +30,11 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import java.awt.FontFormatException;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import javax.swing.JTabbedPane;
-import java.awt.Component;
-import javax.swing.JScrollBar;
-import javax.swing.JToggleButton;
 import javax.swing.JSpinner;
 import java.math.RoundingMode;
 
@@ -47,9 +42,8 @@ public class Financials {
 
 	// Database connection variables
     Connection conn = null;
-//  // Connection based on SQLite within the Project Folder
-//  String dbConnect = "jdbc:sqlite:../project/database/mamaspiddlins.sqlite";
 
+    // Declaring variable types
     public JFrame frmFinancials;
     public JTable tblFinacials;
     public JTable tblDonations;
@@ -107,6 +101,7 @@ public class Financials {
 
     /**
      * Initialize the contents of the frame.
+     * @wbp.parser.entryPoint
      */
     private void initialize() {
     
@@ -204,7 +199,7 @@ public class Financials {
         
         // 
         JTabbedPane mainPane = new JTabbedPane(JTabbedPane.TOP);
-        mainPane.setBounds(31, 59, 900, 550);
+        mainPane.setBounds(31, 59, 900, 560);
         frmFinancials.getContentPane().add(mainPane);
 
         
@@ -269,14 +264,6 @@ public class Financials {
         frmFinancials.getContentPane().add(btnHome);
         
         
-        // Filtering options for user based on the associated options
-        String[] sortOptions = new String [] {"Product Name", "Product Type", "Product Status"};
-        JComboBox<String> cboxOption = new JComboBox<>(sortOptions);
-        cboxOption.setBounds(499, 37, 141, 21);
-        financialsPanel.add(cboxOption);
-        cboxOption.setSelectedIndex(2);
-        cboxOption.setFont(new Font("Tahoma", Font.BOLD, 10));
-        
         // The label that will display the total revenue price
         lblDisplayRevenue = new JLabel("$0.00");
         try {
@@ -300,7 +287,7 @@ public class Financials {
         	lblDisplayRevenue.setFont(new Font("Tahoma", Font.BOLD, 23)); 
             e.printStackTrace();
         }
-        lblDisplayProfit.setBounds(266, 420, 89, 21);
+        lblDisplayProfit.setBounds(71, 502, 89, 21);
         financialsPanel.add(lblDisplayProfit);
 
         
@@ -314,7 +301,7 @@ public class Financials {
         	lblTotalProfit.setFont(new Font("Tahoma", Font.BOLD, 23)); 
             e.printStackTrace();
         }
-        lblTotalProfit.setBounds(266, 385, 89, 25);
+        lblTotalProfit.setBounds(71, 467, 89, 25);
         financialsPanel.add(lblTotalProfit);	
         
         
@@ -400,12 +387,6 @@ public class Financials {
         btnReturnDon.setBounds(353, 41, 100, 21);
         btnReturnDon.setFont(new Font("Dialog", Font.BOLD, 12));
         donationPanel.add(btnReturnDon);
-        
-        JComboBox<String> cboxOptionDon = new JComboBox<>(sortOptions);
-        cboxOptionDon.setBounds(503, 41, 141, 21);
-        cboxOptionDon.setSelectedIndex(2);
-        cboxOptionDon.setFont(new Font("Tahoma", Font.BOLD, 10));
-        donationPanel.add(cboxOptionDon);
         
         
 		// *******************************************************************************************************	        
@@ -524,7 +505,7 @@ public class Financials {
         calculatorPanel.add(txtVolumeAdjust);
         
 
-        JLabel lblDisplayAdjusted = new JLabel("$0.00");
+        lblDisplayAdjusted = new JLabel("$0.00");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
             caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
@@ -533,11 +514,11 @@ public class Financials {
         	lblDisplayAdjusted.setFont(new Font("Tahoma", Font.BOLD, 23)); 
             e.printStackTrace();
         }
-        lblDisplayAdjusted.setBounds(364, 338, 185, 13);
+        lblDisplayAdjusted.setBounds(39, 334, 806, 37);
         calculatorPanel.add(lblDisplayAdjusted);
         
         
-        JLabel lblDisplayRecommended = new JLabel("$0.00");
+        lblDisplayRecommended = new JLabel("$0.00");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
             caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
@@ -546,10 +527,10 @@ public class Financials {
         	lblDisplayRecommended.setFont(new Font("Tahoma", Font.BOLD, 23)); 
             e.printStackTrace();
         }
-        lblDisplayRecommended.setBounds(39, 338, 315, 13);
+        lblDisplayRecommended.setBounds(39, 212, 806, 37);
         calculatorPanel.add(lblDisplayRecommended);
         
-        JLabel lblRecommendPrice = new JLabel("Material Cost ($)");
+        JLabel lblRecommendPrice = new JLabel("Base Recommended Price");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
             caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
@@ -558,11 +539,11 @@ public class Financials {
         	lblRecommendPrice.setFont(new Font("Tahoma", Font.BOLD, 23)); 
             e.printStackTrace();
         }
-        lblRecommendPrice.setBounds(39, 280, 208, 31);
+        lblRecommendPrice.setBounds(39, 171, 208, 31);
         calculatorPanel.add(lblRecommendPrice);
         
         
-        JLabel lblAdjustPrice = new JLabel("Material Cost ($)");
+        JLabel lblAdjustPrice = new JLabel("Adjusted Price");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
             caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
@@ -571,11 +552,11 @@ public class Financials {
         	lblAdjustPrice.setFont(new Font("Tahoma", Font.BOLD, 23)); 
             e.printStackTrace();
         }
-        lblAdjustPrice.setBounds(364, 280, 185, 31);
+        lblAdjustPrice.setBounds(39, 293, 185, 31);
         calculatorPanel.add(lblAdjustPrice);
         
                 JButton btnCalculate = new JButton("Calculate");
-                btnCalculate.setBounds(39, 189, 107, 37);
+                btnCalculate.setBounds(39, 407, 107, 37);
                 calculatorPanel.add(btnCalculate);
                 btnCalculate.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {

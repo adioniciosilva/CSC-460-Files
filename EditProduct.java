@@ -19,8 +19,8 @@ import javax.swing.JSpinner;
 public class EditProduct {
     // Database connection variables
     Connection conn = null;
-//    String dbConnect = "jdbc:sqlite:../project/database/mamaspiddlins.sqlite";
-    
+
+    // Declaring variable types
     public JFrame frmEditProduct;
     private JTextField txtProdName;
     private JTextField txtItemType;
@@ -97,6 +97,10 @@ public class EditProduct {
 		});
 	}
 
+    /**
+     * Initialize the contents of the frame.
+     * @wbp.parser.entryPoint
+     */
     private void initialize() {
         frmEditProduct = new JFrame();
         frmEditProduct.setTitle("Edit Product");

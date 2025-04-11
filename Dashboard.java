@@ -23,11 +23,8 @@ public class Dashboard {
 
      // Database connection variables
     Connection conn = null;
-//    // Connection based on SQLite within the Project Folder
-//    String dbConnect = "jdbc:sqlite:../project/database/mamaspiddlins.sqlite";
 
-
-
+    // Declaring variable types
 	public JFrame frmDashboard;
 	public JTable tblItems;
 	
@@ -75,9 +72,10 @@ public class Dashboard {
 	}
 
 
-	/**
-	 * Initialize the contents of the frame.
-	 */
+    /**
+     * Initialize the contents of the frame.
+     * @wbp.parser.entryPoint
+     */
 	private void initialize() {
 		// Has to be initialized first before the rest to load the data
 		// Creates a table to display the options for the item once searched
@@ -142,7 +140,7 @@ public class Dashboard {
 		// A textfield to search for items along with the use of a button
 		JTextField txtSearchBox = new JTextField();
 		txtSearchBox.setToolTipText("Please enter product name or type");
-		txtSearchBox.setBounds(10, 150, 151, 21);
+		txtSearchBox.setBounds(10, 150, 183, 21);
 		frmDashboard.getContentPane().add(txtSearchBox);
 		
 		// The button to search for items along with the use of a textfield
@@ -153,19 +151,9 @@ public class Dashboard {
 			}
 		});
 		btnSearch.setFont(new Font("Dialog", Font.BOLD, 12));
-		btnSearch.setBounds(183, 150, 90, 21);
+		btnSearch.setBounds(203, 149, 90, 21);
 		frmDashboard.getContentPane().add(btnSearch);
-		
-		
-		// Filtering options for user based on the associated options
-		String[] sortOptions = new String [] {"Product Name", "Product Type", "Product Status"};
-		JComboBox<String> cboxOption = new JComboBox<>(sortOptions);
-		cboxOption.setToolTipText("Filter By:");
-		cboxOption.setFont(new Font("Tahoma", Font.BOLD, 10));
-		cboxOption.setSelectedIndex(2); // Due to indices starting at 0, specifies Option 3
-		cboxOption.setBounds(420, 150, 140, 21);
-		frmDashboard.getContentPane().add(cboxOption);
-		
+
 		// The background to the navigation bar
 		JPanel navigationPanel = new JPanel();
 		navigationPanel.setBounds(51, 60, 466, 52);
@@ -217,7 +205,7 @@ public class Dashboard {
 			}
 		});
 		btnReturn.setFont(new Font("Dialog", Font.BOLD, 12));
-		btnReturn.setBounds(283, 150, 89, 21);
+		btnReturn.setBounds(303, 149, 89, 21);
 		frmDashboard.getContentPane().add(btnReturn);
 		
 		// Loads all products when dashboard is loaded
@@ -280,7 +268,6 @@ public class Dashboard {
 	}
 	
 	// Function to allow the user to fetch products information
-	// Used prepareCall() which is typically used for calling stored procedures in databases like MySQL or Oracle. In SQLite, you should use prepareStatement() instead.
 	private void viewProducts() {
 		String query = "SELECT * FROM items";
 		try(PreparedStatement stmt = conn.prepareStatement(query)){
