@@ -108,14 +108,14 @@ public class Products {
 		// The beginning setup for the Products Page
 		frmProducts = new JFrame();
 		frmProducts.setTitle("Products");
-		frmProducts.setBounds(100, 100, 1000, 1000);
+		frmProducts.setBounds(100, 100, 1000, 700);
 		frmProducts.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmProducts.getContentPane().setBackground(new Color(216, 203, 175));
 		frmProducts.getContentPane().setLayout(null);
 		
 		// The main panel for the panes, with each a represented tab
 		JTabbedPane mainPanel = new JTabbedPane(JTabbedPane.TOP);
-		mainPanel.setBounds(51, 85, 903, 678);
+		mainPanel.setBounds(51, 85, 903, 550);
 		frmProducts.getContentPane().add(mainPanel);
 		
 		JPanel panelAddProd = new JPanel();
@@ -150,19 +150,19 @@ public class Products {
 		
 		// A label that will display to the user product name
         JLabel lblProductName = new JLabel("Product Name");
-        lblProductName.setBounds(95, 75, 90, 13);
+        lblProductName.setBounds(95, 23, 90, 13);
         panelAddProd.add(lblProductName);
         
 		// A textfield to add new products based on product name into database 
         txtProdName = new JTextField();
         txtProdName.setToolTipText("Insert product name");
-        txtProdName.setBounds(276, 72, 179, 19);
+        txtProdName.setBounds(276, 20, 179, 19);
         panelAddProd.add(txtProdName);
         txtProdName.setColumns(10);
         
 		// A label that will display to the user coozie size
 		JLabel lblCoozieSize = new JLabel("Coozie Size");
-		lblCoozieSize.setBounds(95, 110, 114, 13);
+		lblCoozieSize.setBounds(95, 105, 114, 13);
 		panelAddProd.add(lblCoozieSize);
 		
 		// A combobox to add new products based on coozie size into database 
@@ -174,86 +174,86 @@ public class Products {
 		
 		// A label that will display to the user item type
 		JLabel lblItemType = new JLabel("Item Type");
-		lblItemType.setBounds(95, 144, 114, 13);
+		lblItemType.setBounds(95, 57, 114, 13);
 		panelAddProd.add(lblItemType);
         
 		// A textfield to add new products based on item type into database 
 		txtItemType = new JTextField();
 		txtItemType.setToolTipText("Enter the product type");
-		txtItemType.setBounds(276, 141, 179, 19);
+		txtItemType.setBounds(276, 54, 179, 19);
 		panelAddProd.add(txtItemType);
 		txtItemType.setColumns(10);
 		
 		
 		// A label that will display to the user quilt pattern
 		JLabel lblQuiltPattern = new JLabel("Quilt Pattern");
-		lblQuiltPattern.setBounds(95, 182, 90, 13);
+		lblQuiltPattern.setBounds(95, 151, 90, 13);
 		panelAddProd.add(lblQuiltPattern);
 		
 		// A textfield to add new products based on product pattern into database 
 		txtProdPattern = new JTextField();
 		txtProdPattern.setToolTipText("Enter the quilt pattern if applicable");
-		txtProdPattern.setBounds(276, 179, 179, 19);
+		txtProdPattern.setBounds(276, 148, 179, 19);
 		txtProdPattern.setColumns(10);
 		panelAddProd.add(txtProdPattern);
 		
 		// A label that will display to the user product status
 		JLabel lblProductStatus = new JLabel("Product Status");
-		lblProductStatus.setBounds(95, 223, 90, 13);
+		lblProductStatus.setBounds(95, 205, 90, 13);
 		panelAddProd.add(lblProductStatus);
         
 		// A combobox to add new products based on product status into database 
         String[] sortStatus = new String[] {"", "Finished", "Not Started", "Not Finished"};
         cboxProductStatusAdd = new JComboBox<>(sortStatus);
         cboxProductStatusAdd.setToolTipText("Choose current status for the product if applicable");
-        cboxProductStatusAdd.setBounds(276, 219, 179, 21);
+        cboxProductStatusAdd.setBounds(276, 201, 179, 21);
         panelAddProd.add(cboxProductStatusAdd);
         
 		// A textfield to add new products based on material costs into database 
         txtMaterialCost = new JTextField();    
         txtMaterialCost.setToolTipText("Enter the material cost ");
-        txtMaterialCost.setBounds(276, 265, 179, 19);
+        txtMaterialCost.setBounds(276, 247, 179, 19);
         txtMaterialCost.setColumns(10);
         panelAddProd.add(txtMaterialCost);
         
 		// A label that will display to the user product material costs
 		JLabel lblProductMC = new JLabel("Product Material Costs");
-		lblProductMC.setBounds(95, 268, 135, 13);
+		lblProductMC.setBounds(95, 250, 135, 13);
 		panelAddProd.add(lblProductMC);
 		
 		// A label that will display to the user product category
 		JLabel lblProductCategory = new JLabel("Product Category");
-		lblProductCategory.setBounds(95, 310, 135, 13);
+		lblProductCategory.setBounds(95, 293, 135, 13);
 		panelAddProd.add(lblProductCategory);
         
 		// A combobox to add new products based on product category into database 
         String[] sortCategory = new String[] {"", "Inventory", "Sell", "Donate"};
         cboxDonSelAdd = new JComboBox<>(sortCategory);
         cboxDonSelAdd.setToolTipText("Choose the product category");
-        cboxDonSelAdd.setBounds(276, 306, 179, 21);
+        cboxDonSelAdd.setBounds(276, 289, 179, 21);
         panelAddProd.add(cboxDonSelAdd);
         
 		// A label that will display to the user product sell prices
 		JLabel lblProductDSPrices = new JLabel("Product Sell Prices");
-		lblProductDSPrices.setBounds(95, 406, 161, 13);
+		lblProductDSPrices.setBounds(95, 386, 161, 13);
 		panelAddProd.add(lblProductDSPrices);
 		
 		// A textfield to add new products based on product sell price into database 
 		txtProdDSPrices = new JTextField();
 		txtProdDSPrices.setToolTipText("Enter the product selling price");
-		txtProdDSPrices.setBounds(276, 403, 179, 19);
+		txtProdDSPrices.setBounds(276, 383, 179, 19);
 		txtProdDSPrices.setColumns(10);
 		panelAddProd.add(txtProdDSPrices);
 		
 		// A label that will display to the user time spent
 		JLabel lblProductTimeSpent = new JLabel("Time Spent (in hours)");
-		lblProductTimeSpent.setBounds(95, 452, 161, 13);
+		lblProductTimeSpent.setBounds(95, 428, 161, 13);
 		panelAddProd.add(lblProductTimeSpent);
 
 		// A textfield to add new products based on product's time spent into database 
         txtTimeSpent = new JTextField();
         txtTimeSpent.setToolTipText("Enter the time as an integer");
-        txtTimeSpent.setBounds(276, 449, 179, 19);
+        txtTimeSpent.setBounds(276, 425, 179, 19);
         txtTimeSpent.setColumns(10);
         panelAddProd.add(txtTimeSpent);
         
@@ -264,7 +264,7 @@ public class Products {
                 addProduct();
             }
         });
-        btnAddProd.setBounds(141, 493, 114, 21);
+        btnAddProd.setBounds(116, 466, 114, 21);
         panelAddProd.add(btnAddProd);
         
 		//A button to cancel adding a new product based on the associated fields
@@ -274,19 +274,19 @@ public class Products {
             	clearAddProductForm();
             }
         });
-        btnCancelProd.setBounds(289, 493, 135, 21);
+        btnCancelProd.setBounds(287, 466, 135, 21);
         panelAddProd.add(btnCancelProd);
         
         // A label that display to the user product category
         JLabel lblProductQuantity = new JLabel("Product Quantity");
-        lblProductQuantity.setBounds(95, 358, 114, 13);
+        lblProductQuantity.setBounds(95, 339, 114, 13);
         panelAddProd.add(lblProductQuantity);
         
         // A spinner for product quantity inputs
         spinnerProductQuantity = new JSpinner();
         spinnerProductQuantity.setModel(new SpinnerNumberModel(1, 1, 1000, 1));
         spinnerProductQuantity.setToolTipText("Enter the number of products if applicable");
-        spinnerProductQuantity.setBounds(276, 355, 179, 20);
+        spinnerProductQuantity.setBounds(276, 336, 179, 20);
         panelAddProd.add(spinnerProductQuantity);
         
         // *******************************************************************************************************
@@ -326,7 +326,7 @@ public class Products {
         
 		// The table that that will display the information to the user 
         JScrollPane scrollPaneEditProduct = new JScrollPane(tblProducts);
-        scrollPaneEditProduct.setBounds(19, 48, 879, 364);
+        scrollPaneEditProduct.setBounds(10, 45, 879, 364);
         panelEditProd.add(scrollPaneEditProduct);
         
 		// A label that will display to the user product id
@@ -395,7 +395,7 @@ public class Products {
         
 		// The table that that will display the information to the user 
         JScrollPane scrollPaneList = new JScrollPane(tblList);
-        scrollPaneList.setBounds(141, 82, 362, 230);
+        scrollPaneList.setBounds(108, 80, 555, 230);
         panelDeleteProd.add(scrollPaneList);
         
 		// A label that will display to the user product id
@@ -407,7 +407,7 @@ public class Products {
         txtProductDelId = new JTextField();
         txtProductDelId.setToolTipText("Enter the product id based on above");
         txtProductDelId.setColumns(10);
-        txtProductDelId.setBounds(327, 345, 179, 19);
+        txtProductDelId.setBounds(315, 345, 269, 19);
         panelDeleteProd.add(txtProductDelId);
         
 		// A button to delete a product with use of an associated textfield
@@ -436,7 +436,7 @@ public class Products {
                 }
             }
         });
-        btnDeleteProduct.setBounds(194, 386, 124, 21);
+        btnDeleteProduct.setBounds(194, 401, 124, 21);
         panelDeleteProd.add(btnDeleteProduct);
         
 		// A button to cancel the deletion of a product 
@@ -446,7 +446,7 @@ public class Products {
                 txtProductDelId.setText("");
             }
         });
-        btnCancelChanges.setBounds(328, 386, 135, 21);
+        btnCancelChanges.setBounds(378, 401, 135, 21);
         panelDeleteProd.add(btnCancelChanges);
         
 		// A button that will allow the user to return back to the home screen

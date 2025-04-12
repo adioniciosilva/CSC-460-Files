@@ -283,7 +283,7 @@ public class Financials {
         lblDisplayRevenue = new JLabel("$0.00");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
-            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
+            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 18f);
             lblDisplayRevenue.setFont(caveatBrush);
         } catch (IOException | FontFormatException e) {
         	lblDisplayRevenue.setFont(new Font("Tahoma", Font.BOLD, 23)); 
@@ -296,7 +296,7 @@ public class Financials {
         lblDisplayProfit = new JLabel("$0.00");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
-            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
+            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 18f);
             lblDisplayProfit.setFont(caveatBrush);
         } catch (IOException | FontFormatException e) {
         	lblDisplayRevenue.setFont(new Font("Tahoma", Font.BOLD, 23)); 
@@ -310,7 +310,7 @@ public class Financials {
         JLabel lblTotalProfit = new JLabel("Total Profit");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
-            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
+            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 18f);
             lblTotalProfit.setFont(caveatBrush);
         } catch (IOException | FontFormatException e) {
         	lblTotalProfit.setFont(new Font("Tahoma", Font.BOLD, 23)); 
@@ -324,7 +324,7 @@ public class Financials {
         JLabel lblTotalRevenue = new JLabel("Total Revenue");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
-            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
+            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 18f);
             lblTotalRevenue.setFont(caveatBrush);
         } catch (IOException | FontFormatException e) {
         	lblTotalRevenue.setFont(new Font("Tahoma", Font.BOLD, 23)); 
@@ -456,7 +456,7 @@ public class Financials {
         JLabel lblMaterialCost = new JLabel("Material Cost ($)");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
-            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
+            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 18f);
             lblMaterialCost.setFont(caveatBrush);
         } catch (IOException | FontFormatException e) {
         	lblDisplayRevenue.setFont(new Font("Tahoma", Font.BOLD, 23)); 
@@ -470,7 +470,7 @@ public class Financials {
         JLabel lblProfitMargin = new JLabel("Desired Profit Margin (%)");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
-            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
+            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 18f);
             lblProfitMargin.setFont(caveatBrush);
         } catch (IOException | FontFormatException e) {
         	lblDisplayRevenue.setFont(new Font("Tahoma", Font.BOLD, 23)); 
@@ -489,7 +489,7 @@ public class Financials {
         JLabel lblQuantitySold = new JLabel("Quantity Sold");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
-            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
+            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 18f);
             lblQuantitySold.setFont(caveatBrush);
         } catch (IOException | FontFormatException e) {
         	lblQuantitySold.setFont(new Font("Tahoma", Font.BOLD, 23)); 
@@ -515,7 +515,7 @@ public class Financials {
         JLabel lblVolumeAdjust = new JLabel("Material Cost ($)");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
-            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
+            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 18f);
             lblVolumeAdjust.setFont(caveatBrush);
         } catch (IOException | FontFormatException e) {
         	lblVolumeAdjust.setFont(new Font("Tahoma", Font.BOLD, 23)); 
@@ -535,7 +535,7 @@ public class Financials {
         lblDisplayAdjusted = new JLabel("$0.00");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
-            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
+            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 18f);
             lblDisplayAdjusted.setFont(caveatBrush);
         } catch (IOException | FontFormatException e) {
         	lblDisplayAdjusted.setFont(new Font("Tahoma", Font.BOLD, 23)); 
@@ -548,7 +548,7 @@ public class Financials {
         lblDisplayRecommended = new JLabel("$0.00");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
-            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
+            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 18f);
             lblDisplayRecommended.setFont(caveatBrush);
         } catch (IOException | FontFormatException e) {
         	lblDisplayRecommended.setFont(new Font("Tahoma", Font.BOLD, 23)); 
@@ -561,7 +561,7 @@ public class Financials {
         JLabel lblRecommendPrice = new JLabel("Base Recommended Price");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
-            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
+            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 18f);
             lblRecommendPrice.setFont(caveatBrush);
         } catch (IOException | FontFormatException e) {
         	lblRecommendPrice.setFont(new Font("Tahoma", Font.BOLD, 23)); 
@@ -574,7 +574,7 @@ public class Financials {
         JLabel lblAdjustPrice = new JLabel("Adjusted Price");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
-            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 20f);
+            caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 18f);
             lblAdjustPrice.setFont(caveatBrush);
         } catch (IOException | FontFormatException e) {
         	lblAdjustPrice.setFont(new Font("Tahoma", Font.BOLD, 23)); 

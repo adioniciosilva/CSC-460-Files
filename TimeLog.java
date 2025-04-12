@@ -141,7 +141,7 @@ public class TimeLog {
 		// Will use a table to display information to the user based on time
 		JScrollPane scrollPaneTime = new JScrollPane(tblTime);
 		scrollPaneTime.setForeground(Color.WHITE);
-		scrollPaneTime.setBounds(52, 180, 581, 321);
+		scrollPaneTime.setBounds(41, 180, 600, 321);
 		frmTimeLog.getContentPane().add(scrollPaneTime);
 		
 		// A textfield to input search for components from the time table
