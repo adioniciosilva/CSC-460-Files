@@ -134,7 +134,7 @@ public class Dashboard {
 		// The table that that will display the information to the user 
 		JScrollPane scrollPaneItems = new JScrollPane(tblItems);
 		scrollPaneItems.setForeground(new Color(255, 255, 255));
-		scrollPaneItems.setBounds(10, 200, 550, 239);
+		scrollPaneItems.setBounds(10, 200, 550, 333);
 		frmDashboard.getContentPane().add(scrollPaneItems);
 		
 		// A textfield to search for items along with the use of a button

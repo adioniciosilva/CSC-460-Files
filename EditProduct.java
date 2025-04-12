@@ -288,12 +288,12 @@ public class EditProduct {
             String coozieSize = (String) cboxCoozieSize.getSelectedItem();
             double materialCost = Double.parseDouble(txtMaterialCost.getText().trim());
             int quantity = (int) spinnerProductQuantity.getValue();
-            double sellPrice = txtProdDSPrices.getText().isEmpty() ? 0 : 
-                             Double.parseDouble(txtProdDSPrices.getText().trim());
+            String sellPriceStr = txtProdDSPrices.getText().trim();
+            double sellPrice = 0.0;
             int timeSpent = txtTimeSpent.getText().isEmpty() ? 0 : 
                           Integer.parseInt(txtTimeSpent.getText().trim());
 
-            // Will validate inputs
+            // Validate required fields
             if (name.isEmpty() || type.isEmpty() || status.isEmpty() || category.isEmpty()) {
                 JOptionPane.showMessageDialog(frmEditProduct, 
                     "Please fill in all required fields", 
@@ -301,11 +301,65 @@ public class EditProduct {
                 return;
             }
 
+            // Validate quilt pattern (only for quilts)
+            if (type.equalsIgnoreCase("quilt") && pattern.isEmpty()) {
+                JOptionPane.showMessageDialog(frmEditProduct, 
+                    "Quilt pattern is required for quilt items.", 
+                    "Validation Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            
+            // Validate coozie size (only for coozies)
+            if (type.equalsIgnoreCase("coozie") && (coozieSize == null || coozieSize.isEmpty())) {
+                JOptionPane.showMessageDialog(frmEditProduct, 
+                    "Coozie size is required for coozie items.", 
+                    "Validation Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // Validate quantity for Sell/Donate categories
+            if (("Sell".equals(category) || "Donate".equals(category))) {
+                if (quantity <= 0) {
+                    JOptionPane.showMessageDialog(frmEditProduct, 
+                        "Please enter a valid quantity (greater than 0) for Sell or Donate categories.", 
+                        "Validation Error", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+            } else {
+                // For Inventory items, quantity should be 1
+                quantity = 1;
+            }
+
+            // Validate sell price for Sell category
+            if ("Sell".equals(category)) {
+                if (sellPriceStr.isEmpty()) {
+                    JOptionPane.showMessageDialog(frmEditProduct, 
+                        "Sell price is required for Sell category.", 
+                        "Validation Error", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                
+                try {
+                    sellPrice = Double.parseDouble(sellPriceStr);
+                    if (sellPrice <= 0) {
+                        JOptionPane.showMessageDialog(frmEditProduct, 
+                            "Please enter a valid sell price (greater than 0) for Sell category.", 
+                            "Validation Error", JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(frmEditProduct, 
+                        "Invalid sell price format", 
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+
             // Start transaction
             conn.setAutoCommit(false);
             
             try {
-                // Will update the items table
+                // Update the items table
                 String query = "UPDATE items SET ITEM_NM=?, ITEM_TYPE_DE=?, QUILT_PATTERN_CD=?, " +
                              "ITEM_STATUS_CD=?, CATEGORY_CD=?, MATERIAL_COST_AM=?, COOZIE_SIZE_DE=? " +
                              "WHERE ITEM_ID=?";
@@ -313,43 +367,46 @@ public class EditProduct {
                 try (PreparedStatement stmt = conn.prepareStatement(query)) {
                     stmt.setString(1, name);
                     stmt.setString(2, type);
-                    stmt.setString(3, pattern.isEmpty() ? null : pattern);
+                    stmt.setString(3, type.equalsIgnoreCase("quilt") ? pattern : null);
                     stmt.setString(4, status);
                     stmt.setString(5, category);
                     stmt.setDouble(6, materialCost);
-                    stmt.setString(7, coozieSize.isEmpty() ? null : coozieSize);
+                    stmt.setString(7, type.equalsIgnoreCase("coozie") ? coozieSize : null);
                     stmt.setInt(8, currentProductId);
                     stmt.executeUpdate();
                 }
 
-                // Will allow updates to sale or donations based on category
+                // Update sales or donations based on category
                 if ("Sell".equals(category)) {
                     updateSalesTable(sellPrice, quantity);
                 } else if ("Donate".equals(category)) {
                     updateDonationsTable(quantity);
+                } else {
+                    // For inventory items, remove from sales/donations if they exist
+                    deleteFromSalesOrDonations();
                 }
 
-                // Will update the time logs if time spent was provided
+                // Update time logs if time spent was provided
                 if (timeSpent > 0) {
                     updateTimeLogs(timeSpent);
                 }
                 
-                // Will commit transaction if all the updates are successful
+                // Commit transaction if all updates are successful
                 conn.commit();
                 JOptionPane.showMessageDialog(frmEditProduct, 
                     "Product updated successfully!", 
                     "Success", JOptionPane.INFORMATION_MESSAGE);
                 
-                // Will return to Products window
+                // Return to Products window
                 frmEditProduct.dispose();
                 Products productsWindow = new Products();
                 productsWindow.frmProducts.setVisible(true);
             } catch (SQLException e) {
-                // Will rollback transaction if any error occurs
-            	conn.rollback();
+                // Rollback transaction if any error occurs
+                conn.rollback();
                 throw e;
             } finally {
-            	// Will restore the auto-commit mode
+                // Restore auto-commit mode
                 conn.setAutoCommit(true);
             }
         } catch (NumberFormatException e) {
@@ -360,6 +417,23 @@ public class EditProduct {
             JOptionPane.showMessageDialog(frmEditProduct, 
                 "Database error: " + e.getMessage(), 
                 "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // New helper method to remove from sales/donations when category changes to Inventory
+    private void deleteFromSalesOrDonations() throws SQLException {
+        // Delete from sales if exists
+        String deleteSales = "DELETE FROM sales WHERE ITEM_ID = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(deleteSales)) {
+            stmt.setInt(1, currentProductId);
+            stmt.executeUpdate();
+        }
+        
+        // Delete from donations if exists
+        String deleteDonations = "DELETE FROM donations WHERE ITEM_ID = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(deleteDonations)) {
+            stmt.setInt(1, currentProductId);
+            stmt.executeUpdate();
         }
     }
     

@@ -585,12 +585,33 @@ public class Products {
             return;
         }
 
-        // Validate quantity for Sell/Donate categories
-        if (("Sell".equals(category) || "Donate".equals(category)) && quantity <= 0) {
+        // Validate quilt pattern (only for quilts)
+        if (itemType.equalsIgnoreCase("quilt") && prodPattern.isEmpty()) {
             JOptionPane.showMessageDialog(frmProducts, 
-                "Please enter a valid quantity (greater than 0) for Sell or Donate categories.", 
+                "Quilt pattern is required for quilt items.", 
                 "Validation Error", JOptionPane.WARNING_MESSAGE);
             return;
+        }
+        
+        // Validate coozie size (only for coozies)
+        if (itemType.equalsIgnoreCase("coozie") && (coozieSize == null || coozieSize.isEmpty())) {
+            JOptionPane.showMessageDialog(frmProducts, 
+                "Coozie size is required for coozie items.", 
+                "Validation Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Validate quantity for Sell/Donate categories
+        if (("Sell".equals(category) || "Donate".equals(category))) {
+            if (quantity <= 0) {
+                JOptionPane.showMessageDialog(frmProducts, 
+                    "Please enter a valid quantity (greater than 0) for Sell or Donate categories.", 
+                    "Validation Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        } else {
+            // For Inventory items, quantity should be 1
+            quantity = 1;
         }
 
         // Parse numeric values
@@ -600,9 +621,24 @@ public class Products {
         
         try {
             materialCost = Double.parseDouble(materialCostStr);
-            if (!sellPriceStr.isEmpty()) {
+            
+            // Validate sell price for Sell category
+            if ("Sell".equals(category)) {
+                if (sellPriceStr.isEmpty()) {
+                    JOptionPane.showMessageDialog(frmProducts, 
+                        "Sell price is required for Sell category.", 
+                        "Validation Error", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
                 sellPrice = Double.parseDouble(sellPriceStr);
+                if (sellPrice <= 0) {
+                    JOptionPane.showMessageDialog(frmProducts, 
+                        "Please enter a valid sell price (greater than 0) for Sell category.", 
+                        "Validation Error", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
             }
+            
             if (!timeSpentStr.isEmpty()) {
                 timeSpent = Integer.parseInt(timeSpentStr);
             }
@@ -610,14 +646,6 @@ public class Products {
             JOptionPane.showMessageDialog(frmProducts, 
                 "Please enter valid numbers for Material Cost, Sell Price, and Time Spent.", 
                 "Input Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // Validate sell price for Sell category
-        if ("Sell".equals(category) && sellPrice <= 0) {
-            JOptionPane.showMessageDialog(frmProducts, 
-                "Please enter a valid sell price (greater than 0) for Sell category.", 
-                "Validation Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -635,10 +663,10 @@ public class Products {
             stmt.setString(1, prodName);
             stmt.setString(2, itemType);
             stmt.setString(3, productStatus);
-            stmt.setString(4, prodPattern.isEmpty() ? null : prodPattern);
+            stmt.setString(4, itemType.equalsIgnoreCase("quilt") ? prodPattern : null);
             stmt.setString(5, category);
-            stmt.setString(6, currentDate); // Store as string instead of Date object
-            stmt.setString(7, coozieSize == null || coozieSize.isEmpty() ? null : coozieSize);
+            stmt.setString(6, currentDate);
+            stmt.setString(7, itemType.equalsIgnoreCase("coozie") ? coozieSize : null);
             stmt.setDouble(8, materialCost);
 
             // Execute insert

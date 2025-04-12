@@ -147,7 +147,7 @@ public class TimeLog {
 		// A textfield to input search for components from the time table
 		JTextField txtSearchTimeLog = new JTextField();
 		txtSearchTimeLog.setToolTipText("Please enter product name or type");
-		txtSearchTimeLog.setBounds(52, 140, 186, 21);
+		txtSearchTimeLog.setBounds(41, 140, 197, 21);
 		frmTimeLog.getContentPane().add(txtSearchTimeLog);
 		
 		// A button to be used with the associated textfield to search for a specific time 

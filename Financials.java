@@ -342,7 +342,7 @@ public class Financials {
 		// A textfield to allow user to input product name or type 
         JTextField txtSearchBox = new JTextField();
         txtSearchBox.setToolTipText("Please enter product name or type");
-        txtSearchBox.setBounds(25, 37, 151, 21);
+        txtSearchBox.setBounds(25, 37, 220, 21);
         financialsPanel.add(txtSearchBox);
         
 		// The button to search for items along with the use of a textfield
@@ -352,7 +352,7 @@ public class Financials {
                 searchFinancials(txtSearchBox.getText());
         	}
         });
-        btnSearch.setBounds(238, 37, 81, 21);
+        btnSearch.setBounds(285, 36, 81, 21);
         financialsPanel.add(btnSearch);
         btnSearch.setFont(new Font("Dialog", Font.BOLD, 12));
         
@@ -363,7 +363,7 @@ public class Financials {
                 viewFinancials(); 
         	}
         });
-        btnReturn.setBounds(349, 37, 100, 21);
+        btnReturn.setBounds(386, 36, 100, 21);
         financialsPanel.add(btnReturn);
         btnReturn.setFont(new Font("Dialog", Font.BOLD, 12));
         
@@ -380,7 +380,7 @@ public class Financials {
 		// A textfield to search for items along with the use of a button
         JTextField txtSearchBoxDon = new JTextField();
         txtSearchBoxDon.setToolTipText("Please enter product name or type");
-        txtSearchBoxDon.setBounds(29, 41, 151, 21);
+        txtSearchBoxDon.setBounds(29, 41, 222, 21);
         donationPanel.add(txtSearchBoxDon);
         
 		// The button to search for items along with the use of a textfield
@@ -390,7 +390,7 @@ public class Financials {
                 searchDonations(txtSearchBoxDon.getText());
         	}
         });
-        btnSearchDonations.setBounds(242, 41, 81, 21);
+        btnSearchDonations.setBounds(278, 40, 81, 21);
         btnSearchDonations.setFont(new Font("Dialog", Font.BOLD, 12));
         donationPanel.add(btnSearchDonations);
         
@@ -405,7 +405,7 @@ public class Financials {
         		viewDonations();
         	}
         });
-        btnReturnDon.setBounds(353, 41, 100, 21);
+        btnReturnDon.setBounds(382, 40, 100, 21);
         btnReturnDon.setFont(new Font("Dialog", Font.BOLD, 12));
         donationPanel.add(btnReturnDon);
         
@@ -427,7 +427,7 @@ public class Financials {
         	}
         });
         btnReturnInv.setFont(new Font("Dialog", Font.BOLD, 12));
-        btnReturnInv.setBounds(353, 38, 100, 21);
+        btnReturnInv.setBounds(372, 38, 100, 21);
         inventoryPanel.add(btnReturnInv);
         
 		// The button to search for items along with the use of a textfield
@@ -438,13 +438,13 @@ public class Financials {
         	}
         });
         btnSearchInventory.setFont(new Font("Dialog", Font.BOLD, 12));
-        btnSearchInventory.setBounds(242, 38, 81, 21);
+        btnSearchInventory.setBounds(266, 38, 81, 21);
         inventoryPanel.add(btnSearchInventory);
         
 		// A textfield to search for items along with the use of a button
         txtSearchBoxInv = new JTextField();
         txtSearchBoxInv.setToolTipText("Please enter product name or type");
-        txtSearchBoxInv.setBounds(29, 38, 151, 21);
+        txtSearchBoxInv.setBounds(29, 38, 221, 21);
         inventoryPanel.add(txtSearchBoxInv);
         
         
