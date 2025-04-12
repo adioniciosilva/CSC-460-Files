@@ -57,9 +57,11 @@ public class Financials {
     private JSpinner spinnerQuantitySold;
     private JLabel lblDisplayRecommended;
     private JLabel lblDisplayAdjusted;
+    
     /**
      * Launch the application.
      */
+    
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -74,15 +76,17 @@ public class Financials {
     }
 
     /**
-     * Create the application.
+     * Constructor for the Financials class
+     * Initializes the database connection and UI component
      */
     public Financials() {
         try {
+	    	// Load JDBC driver and establish database connection
             Class.forName("org.sqlite.JDBC");
-            // Fix the path as suggested above
             String dbPath = new File("database/mamaspiddlins.sqlite").getAbsolutePath();
             conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
             
+	        // In case of unsuccessful connection to initialize UI components
             if (conn != null) {
                 System.out.println("Connection successful");
                 initialize();
@@ -100,7 +104,8 @@ public class Financials {
     }
 
     /**
-     * Initialize the contents of the frame.
+     * Initialize the contents of the frame
+     * Sets up all UI components such as tabs, tables, and buttons
      * @wbp.parser.entryPoint
      */
     private void initialize() {
@@ -113,12 +118,13 @@ public class Financials {
         frmFinancials.getContentPane().setBackground(new Color(216, 203, 175));
         frmFinancials.getContentPane().setLayout(null);
         
-        // Allows user to view a table with associated columns within the Finacials tab
+        // Allows user to view a table with associated columns within the Financials tab
         tblFinacials = new JTable();
         tblFinacials.setModel(new DefaultTableModel(
             new Object[][]{},
             new String[] {"Product ID", "Product Name", "Material Costs", "Sale Date", "Quantity Sold", "Total Price"}    
         ));
+       
         // Disable editing in the table
         tblFinacials.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tblFinacials.setDefaultEditor(Object.class, null);  // Disable editor for the entire table
@@ -142,6 +148,7 @@ public class Financials {
             }
         });    
         
+        // Allows user to view a table with associated columns within the Donations tab
         tblDonations = new JTable();
         tblDonations.setModel(new DefaultTableModel(
             new Object[][] {},
@@ -149,14 +156,17 @@ public class Financials {
                          "Donation Date", "Donation Quantity"}
         ));
         
+        // Disable editing in the table
         tblDonations.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tblDonations.setDefaultEditor(Object.class, null);
         tblDonations.getTableHeader().setReorderingAllowed(false);
         tblDonations.getTableHeader().setResizingAllowed(false);
         
+        // Will be used to allow sorting for the tables by ascending/descending order
         TableRowSorter<DefaultTableModel> donationSorter = new TableRowSorter<>((DefaultTableModel) tblDonations.getModel());
         tblDonations.setRowSorter(donationSorter);
 
+        // Will allow the sorting by column header
         tblDonations.getTableHeader().addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 int column = tblDonations.columnAtPoint(evt.getPoint());
@@ -169,7 +179,7 @@ public class Financials {
             }
         }); 
         
-        
+        // Allows user to view a table with associated columns within the Inventory tab
         tblInventory = new JTable();
         tblInventory.setModel(new DefaultTableModel(
             new Object[][] {},
@@ -177,14 +187,17 @@ public class Financials {
                          "Inventory Date"}
         ));
         
+        // Disable editing in the table
         tblInventory.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tblInventory.setDefaultEditor(Object.class, null);
         tblInventory.getTableHeader().setReorderingAllowed(false);
         tblInventory.getTableHeader().setResizingAllowed(false);
         
+		// Will be used to allow sorting for the tables by ascending/descending order
         TableRowSorter<DefaultTableModel> inventorySorter = new TableRowSorter<>((DefaultTableModel) tblInventory.getModel());
         tblInventory.setRowSorter(inventorySorter);
 
+		// Will allow the sorting by column header
         tblInventory.getTableHeader().addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 int column = tblInventory.columnAtPoint(evt.getPoint());
@@ -197,7 +210,8 @@ public class Financials {
             }
         });
         
-        // 
+        
+		// The main panel for the panes, with each a represented tab
         JTabbedPane mainPane = new JTabbedPane(JTabbedPane.TOP);
         mainPane.setBounds(31, 59, 900, 560);
         frmFinancials.getContentPane().add(mainPane);
@@ -252,6 +266,7 @@ public class Financials {
 		// *******************************************************************************************************	        
         // Financial Components
         
+		// A button that will allow the user to return back to the home screen
         JButton btnHome = new JButton("Home");
         btnHome.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
@@ -318,17 +333,19 @@ public class Financials {
         lblTotalRevenue.setBounds(71, 385, 116, 25);
         financialsPanel.add(lblTotalRevenue);	
         
-        
+		// The table that that will display the information to the user 
         JScrollPane scrollPaneItems = new JScrollPane(tblFinacials);
         scrollPaneItems.setForeground(Color.WHITE);
         scrollPaneItems.setBounds(25, 75, 866, 300);
         financialsPanel.add(scrollPaneItems);
         
+		// A textfield to allow user to input product name or type 
         JTextField txtSearchBox = new JTextField();
         txtSearchBox.setToolTipText("Please enter product name or type");
         txtSearchBox.setBounds(25, 37, 151, 21);
         financialsPanel.add(txtSearchBox);
         
+		// The button to search for items along with the use of a textfield
         JButton btnSearch = new JButton("Search");
         btnSearch.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
@@ -339,6 +356,7 @@ public class Financials {
         financialsPanel.add(btnSearch);
         btnSearch.setFont(new Font("Dialog", Font.BOLD, 12));
         
+		// Will allow the table to reset/refresh to see all data
         JButton btnReturn = new JButton("Reset");
         btnReturn.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
@@ -353,16 +371,19 @@ public class Financials {
 		// *******************************************************************************************************	        
         // Donation Components     
         
+		// The table that that will display the information to the user 
         JScrollPane scrollPaneDonations = new JScrollPane(tblDonations);
         scrollPaneDonations.setBounds(29, 79, 866, 335);
         scrollPaneDonations.setForeground(Color.WHITE);
         donationPanel.add(scrollPaneDonations);
         
+		// A textfield to search for items along with the use of a button
         JTextField txtSearchBoxDon = new JTextField();
         txtSearchBoxDon.setToolTipText("Please enter product name or type");
         txtSearchBoxDon.setBounds(29, 41, 151, 21);
         donationPanel.add(txtSearchBoxDon);
         
+		// The button to search for items along with the use of a textfield
         JButton btnSearchDonations = new JButton("Search");
         btnSearchDonations.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
@@ -392,11 +413,13 @@ public class Financials {
 		// *******************************************************************************************************	        
         // Donation Components
         
+		// The table that that will display the information to the user 
         JScrollPane scrollPaneInventory = new JScrollPane(tblInventory);
         scrollPaneInventory.setForeground(Color.WHITE);
         scrollPaneInventory.setBounds(29, 76, 856, 335);
         inventoryPanel.add(scrollPaneInventory);
         
+		// Will allow the table to reset/refresh to see all data
         JButton btnReturnInv = new JButton("Reset");
         btnReturnInv.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
@@ -407,6 +430,7 @@ public class Financials {
         btnReturnInv.setBounds(353, 38, 100, 21);
         inventoryPanel.add(btnReturnInv);
         
+		// The button to search for items along with the use of a textfield
         JButton btnSearchInventory = new JButton("Search");
         btnSearchInventory.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
@@ -417,6 +441,7 @@ public class Financials {
         btnSearchInventory.setBounds(242, 38, 81, 21);
         inventoryPanel.add(btnSearchInventory);
         
+		// A textfield to search for items along with the use of a button
         txtSearchBoxInv = new JTextField();
         txtSearchBoxInv.setToolTipText("Please enter product name or type");
         txtSearchBoxInv.setBounds(29, 38, 151, 21);
@@ -427,7 +452,7 @@ public class Financials {
 		// *******************************************************************************************************	        
         // Calculator Components
         
-        
+        // A label that will display to the user material cost
         JLabel lblMaterialCost = new JLabel("Material Cost ($)");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
@@ -441,7 +466,7 @@ public class Financials {
         calculatorPanel.add(lblMaterialCost);
         
 
-
+        // A label that will display the profit margin to the user
         JLabel lblProfitMargin = new JLabel("Desired Profit Margin (%)");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
@@ -454,13 +479,13 @@ public class Financials {
         lblProfitMargin.setBounds(225, 47, 199, 31);
         calculatorPanel.add(lblProfitMargin);
         
-        
+        // A spinner for product quantity inputs
         spinnerQuantitySold = new JSpinner();
         spinnerQuantitySold.setModel(new SpinnerNumberModel(1, 1, 1000, 1));
         spinnerQuantitySold.setBounds(434, 107, 129, 20);
         calculatorPanel.add(spinnerQuantitySold);
 
-        
+        // A label that display to the user quantity sold
         JLabel lblQuantitySold = new JLabel("Quantity Sold");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
@@ -473,19 +498,20 @@ public class Financials {
         lblQuantitySold.setBounds(434, 47, 149, 31);
         calculatorPanel.add(lblQuantitySold);
         
-
+		// A textfield that will take a profit margin input
         txtProfitMargin = new JTextField();
         txtProfitMargin.setText("0"); 
         txtProfitMargin.setBounds(225, 107, 149, 19);
         calculatorPanel.add(txtProfitMargin);
         txtProfitMargin.setColumns(10);
 
+		// A textfield that will take a material cost input 
         txtMaterialCost = new JTextField();
         txtMaterialCost.setColumns(10);
         txtMaterialCost.setBounds(39, 107, 143, 19);
         calculatorPanel.add(txtMaterialCost);
         
-        
+		// A label that will display to the material cost
         JLabel lblVolumeAdjust = new JLabel("Material Cost ($)");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
@@ -498,13 +524,14 @@ public class Financials {
         lblVolumeAdjust.setBounds(620, 56, 178, 13);
         calculatorPanel.add(lblVolumeAdjust);
 
+		// A textfield that will take a volume adjusted input 
         txtVolumeAdjust = new JTextField();
         txtVolumeAdjust.setText("1.0"); // Default no adjustment
         txtVolumeAdjust.setColumns(10);
         txtVolumeAdjust.setBounds(620, 107, 112, 19);
         calculatorPanel.add(txtVolumeAdjust);
         
-
+		// A label that will display to the user price adjusted
         lblDisplayAdjusted = new JLabel("$0.00");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
@@ -517,7 +544,7 @@ public class Financials {
         lblDisplayAdjusted.setBounds(39, 334, 806, 37);
         calculatorPanel.add(lblDisplayAdjusted);
         
-        
+		// A label that will display to the user recommended price
         lblDisplayRecommended = new JLabel("$0.00");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
@@ -530,6 +557,7 @@ public class Financials {
         lblDisplayRecommended.setBounds(39, 212, 806, 37);
         calculatorPanel.add(lblDisplayRecommended);
         
+		// A label that will display to the base recommended price text
         JLabel lblRecommendPrice = new JLabel("Base Recommended Price");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
@@ -542,7 +570,7 @@ public class Financials {
         lblRecommendPrice.setBounds(39, 171, 208, 31);
         calculatorPanel.add(lblRecommendPrice);
         
-        
+		// A label that will display to the user adjusted price text
         JLabel lblAdjustPrice = new JLabel("Adjusted Price");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
@@ -555,16 +583,17 @@ public class Financials {
         lblAdjustPrice.setBounds(39, 293, 185, 31);
         calculatorPanel.add(lblAdjustPrice);
         
-                JButton btnCalculate = new JButton("Calculate");
-                btnCalculate.setBounds(39, 407, 107, 37);
-                calculatorPanel.add(btnCalculate);
-                btnCalculate.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        calculatePrices();
-                    }
-                });
+		// A button to calculate product price based on the associated fields
+        JButton btnCalculate = new JButton("Calculate");
+        btnCalculate.setBounds(39, 407, 107, 37);
+        calculatorPanel.add(btnCalculate);
+        btnCalculate.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                calculatePrices();
+            }
+        });
 
-        
+        // A button to print the screen as a png
         JButton btnPrintReport = new JButton("Print Report");
         btnPrintReport.setBounds(681, 26, 107, 35);
         frmFinancials.getContentPane().add(btnPrintReport);
@@ -588,13 +617,15 @@ public class Financials {
             viewFinancials();
             return;
         }
-
+        
+        // A query to search financial data
         String query = "SELECT i.ITEM_ID, i.ITEM_NM, i.MATERIAL_COST_AM, s.SALE_DT, s.QUANTITY_SOLD_NO, s.SALE_PRICE_AM " +
                       "FROM items i JOIN sales s ON i.ITEM_ID = s.ITEM_ID " +
                       "WHERE i.CATEGORY_CD = 'Sell' AND (i.ITEM_NM LIKE ? OR i.ITEM_TYPE_DE LIKE ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, "%" + searchTerm + "%");
+           // Set search parameters
+        	stmt.setString(1, "%" + searchTerm + "%");
             stmt.setString(2, "%" + searchTerm + "%");
             ResultSet rs = stmt.executeQuery();
             DefaultTableModel model = (DefaultTableModel) tblFinacials.getModel();
@@ -602,15 +633,17 @@ public class Financials {
 
             BigDecimal totalRevenue = BigDecimal.ZERO;
             BigDecimal totalMaterialCost = BigDecimal.ZERO;
-
+            
+            // Process results
             while (rs.next()) {
                 BigDecimal materialCost = rs.getBigDecimal("MATERIAL_COST_AM");
                 BigDecimal salePrice = rs.getBigDecimal("SALE_PRICE_AM");
-
+                
+                // Will update the total amount
                 totalRevenue = totalRevenue.add(salePrice);
                 totalMaterialCost = totalMaterialCost.add(materialCost); // No quantity multiplier
 
-                // Add row to table (unchanged)
+                // Add row to table 
                 model.addRow(new Object[]{
                     rs.getInt("ITEM_ID"),
                     rs.getString("ITEM_NM"),
@@ -621,7 +654,7 @@ public class Financials {
                 });
             }
 
-            // Profit = Revenue - Material Costs (no quantity multiplier)
+            // Calculate and display based on formula, profit = revenue - material costs 
             BigDecimal totalProfit = totalRevenue.subtract(totalMaterialCost);
 
             lblDisplayRevenue.setText(String.format("$%.2f", totalRevenue));
@@ -634,19 +667,7 @@ public class Financials {
         }
     }
     
-//  Add this helper method before viewFinancials()
-//    private void updateSaleDate(int itemId, LocalDate correctDate) {
-//        String updateQuery = "UPDATE sales SET SALE_DT = ? WHERE ITEM_ID = ?";
-//        try (PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
-//            stmt.setString(1, correctDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
-//            stmt.setInt(2, itemId);
-//            stmt.executeUpdate();
-//        } catch (SQLException e) {
-//            System.err.println("Error updating date for item " + itemId);
-//            e.printStackTrace();
-//        }
-//    }
-    
+    // Function that will update donation dates within the database
     private void updateDonationDate(int donationId, LocalDate correctDate) {
         String updateQuery = "UPDATE donations SET DONATION_DT = ? WHERE DONATION_ID = ?";
         try (PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
@@ -659,6 +680,7 @@ public class Financials {
         }
     }
     
+    // Function that will display and load the financial data based on sales to the table
     private void viewFinancials() {
         String query = "SELECT i.ITEM_ID, i.ITEM_NM, i.MATERIAL_COST_AM, s.SALE_DT, s.QUANTITY_SOLD_NO, s.SALE_PRICE_AM " +
                       "FROM items i JOIN sales s ON i.ITEM_ID = s.ITEM_ID " +
@@ -710,8 +732,7 @@ public class Financials {
         }
     }
     
- // Function to allow the user to search for donations by Item Name or Item Type
-    // Updated searchDonations() with similar date handling
+ // Function to allow the user to search for donations by item name or item type
     private void searchDonations(String searchTerm) {
         if (searchTerm == null || searchTerm.trim().isEmpty()) {
             JOptionPane.showMessageDialog(frmFinancials, "Search bar cannot be empty.", 
@@ -782,7 +803,7 @@ public class Financials {
     }
     
 
-    
+    // Function that will display and load the donation data in the table
     private void viewDonations() {
         String query = "SELECT d.DONATION_ID, d.ITEM_ID, i.ITEM_NM, i.ITEM_TYPE_DE, d.DONATION_DT, d.QUANTITY_DONATED_NO " +
                        "FROM donations d JOIN items i ON d.ITEM_ID = i.ITEM_ID " +
@@ -837,6 +858,7 @@ public class Financials {
         }    
     }
     
+    // Function that will search inventory items with only product name or type
     private void searchInventory(String searchTerm) {
     	if(searchTerm == null || searchTerm.trim().isEmpty()) {
 	        JOptionPane.showMessageDialog(frmFinancials, "Search bar cannot be empty. Please enter a valid value.", "Validation Error", JOptionPane.WARNING_MESSAGE);
@@ -844,7 +866,7 @@ public class Financials {
     	}
     	
 	    try {
-	        // Query to search in both ITEM_NM and ITEM_TYPE_DE columns
+	        // A query to search in both item name and item type columns
 	    	String query = "SELECT * FROM items WHERE (ITEM_NM LIKE ? OR ITEM_TYPE_DE LIKE ?) AND CATEGORY_CD = 'Inventory'";
 	    	
 	        try (PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -887,6 +909,7 @@ public class Financials {
 	    }
     }
     
+    // Function that will load and display the inventory items in the table
     private void viewInventory(){
     	String query = "SELECT * FROM items WHERE CATEGORY_CD = 'Inventory'";
 		try(PreparedStatement stmt = conn.prepareStatement(query)){
@@ -908,7 +931,8 @@ public class Financials {
 			ex.printStackTrace();
 		}
 	}
-		
+	
+    // Function that will calculate recommended and adjusted prices based on input values
     private void calculatePrices() {
         try {
             // Get input values

@@ -36,7 +36,10 @@ public class EditProduct {
     private JLabel lblProductQuantity;
     private JSpinner spinnerProductQuantity;
     private int currentProductId;
-
+    
+    /**
+     * Launch the application.
+     */
     
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -51,6 +54,11 @@ public class EditProduct {
         });
     }
 
+    /**
+     * Constructor for the Edit Products class
+     * Initializes the database connection and UI component
+     */
+    
     public EditProduct(int productId, String name, String type, String pattern, 
             String status, String category, double materialCost, 
             String coozieSize, int quantity) {
@@ -102,110 +110,135 @@ public class EditProduct {
      * @wbp.parser.entryPoint
      */
     private void initialize() {
+    	
+		// The beginning setup for the Edit Products Page
         frmEditProduct = new JFrame();
         frmEditProduct.setTitle("Edit Product");
         frmEditProduct.getContentPane().setBackground(new Color(216, 203, 175));
         frmEditProduct.getContentPane().setLayout(null);
-        
+        frmEditProduct.setBounds(100, 100, 500, 600);
+        frmEditProduct.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        // The main panel for the window
         JPanel editProductPanel = new JPanel();
         editProductPanel.setBounds(24, 10, 437, 513);
         frmEditProduct.getContentPane().add(editProductPanel);
         editProductPanel.setLayout(null);
         
+		// The label that will display the product name
         JLabel lblProductName = new JLabel("Product Name");
         lblProductName.setBounds(33, 38, 90, 13);
         editProductPanel.add(lblProductName);
         
+		// A textfield that allow an edit to a product name 
         txtProdName = new JTextField();
         txtProdName.setToolTipText("Insert product name");
         txtProdName.setColumns(10);
         txtProdName.setBounds(214, 35, 179, 19);
         editProductPanel.add(txtProdName);
         
+		// A combobox that allow an to products based on coozie size into database 
         String[] sortCoozieSize = new String[] {"","Small", "Medium", "Large"};
         cboxCoozieSize = new JComboBox<>(sortCoozieSize);
         cboxCoozieSize.setToolTipText("Choose coozie size if applicable");
         cboxCoozieSize.setBounds(214, 64, 179, 21);
         editProductPanel.add(cboxCoozieSize);
         
+		// A label that will display to the user coozie size
         JLabel lblCoozieSize = new JLabel("Coozie Size");
         lblCoozieSize.setBounds(33, 73, 114, 13);
         editProductPanel.add(lblCoozieSize);
         
+		// A label that will display to the user item type
         JLabel lblItemType = new JLabel("Item Type");
         lblItemType.setBounds(33, 107, 114, 13);
         editProductPanel.add(lblItemType);
         
+		// A textfield that allow an edit to a product type 
         txtItemType = new JTextField();
         txtItemType.setToolTipText("Enter the product type");
         txtItemType.setColumns(10);
         txtItemType.setBounds(214, 104, 179, 19);
         editProductPanel.add(txtItemType);
         
+		// A textfield that allow an edit to a product pattern
         txtProdPattern = new JTextField();
         txtProdPattern.setToolTipText("Enter the quilt pattern if applicable");
         txtProdPattern.setColumns(10);
         txtProdPattern.setBounds(214, 142, 179, 19);
         editProductPanel.add(txtProdPattern);
         
+		// A label that will display to the user quilt pattern
         JLabel lblQuiltPattern = new JLabel("Quilt Pattern");
         lblQuiltPattern.setBounds(33, 145, 90, 13);
         editProductPanel.add(lblQuiltPattern);
         
+		// A label that will display to the user product status
         JLabel lblProductStatus = new JLabel("Product Status");
         lblProductStatus.setBounds(33, 186, 90, 13);
         editProductPanel.add(lblProductStatus);
         
+		// A combobox to edit a products based on product status into database 
         String[] sortStatus = new String[] {"", "Finished", "Not Started", "Not Finished"};
         cboxProductStatusAdd = new JComboBox<>(sortStatus);
         cboxProductStatusAdd.setToolTipText("Choose current status for the product if applicable");
         cboxProductStatusAdd.setBounds(214, 182, 179, 21);
         editProductPanel.add(cboxProductStatusAdd);
         
+		// A textfield that allow an edit to a material cost
         txtMaterialCost = new JTextField();
         txtMaterialCost.setToolTipText("Enter the material cost ");
         txtMaterialCost.setColumns(10);
         txtMaterialCost.setBounds(214, 228, 179, 19);
         editProductPanel.add(txtMaterialCost);
         
+		// A label that will display to the user product material costs
         JLabel lblProductMC = new JLabel("Product Material Costs");
         lblProductMC.setBounds(33, 231, 135, 13);
         editProductPanel.add(lblProductMC);
         
+		// A label that will display to the user product category
         JLabel lblProductCategory = new JLabel("Product Category");
         lblProductCategory.setBounds(33, 273, 135, 13);
         editProductPanel.add(lblProductCategory);
         
+		// A combobox to edit a product based on product category into database 
         String[] sortCategory = new String[] {"", "Inventory", "Sell", "Donate"};
         cboxDonSelAdd = new JComboBox<>(sortCategory);
         cboxDonSelAdd.setToolTipText("Choose the product category");
         cboxDonSelAdd.setBounds(214, 269, 179, 21);
         editProductPanel.add(cboxDonSelAdd);
         
+		// A textfield that allow an edit to a product sale cost
         txtProdDSPrices = new JTextField();
         txtProdDSPrices.setToolTipText("Enter the product selling price");
         txtProdDSPrices.setColumns(10);
         txtProdDSPrices.setBounds(214, 356, 179, 19);
         editProductPanel.add(txtProdDSPrices);
         
+		// A label that will display to the user product sell prices
         JLabel lblProductDSPrices = new JLabel("Product Sell Prices");
         lblProductDSPrices.setBounds(33, 359, 161, 13);
         editProductPanel.add(lblProductDSPrices);
         
+		// A label that will display to the user time spent
         JLabel lblProductTimeSpent = new JLabel("Time Spent (in hours)");
         lblProductTimeSpent.setBounds(33, 403, 161, 13);
         editProductPanel.add(lblProductTimeSpent);
         
+		// A textfield that allow an edit to time spent on a product
         txtTimeSpent = new JTextField();
         txtTimeSpent.setToolTipText("Enter the time as an integer");
         txtTimeSpent.setColumns(10);
         txtTimeSpent.setBounds(214, 400, 179, 19);
         editProductPanel.add(txtTimeSpent);
         
+		// A button to save your edits to the product
         btnEditProduct = new JButton("Save Changes");
         btnEditProduct.setBounds(63, 444, 127, 21);
         editProductPanel.add(btnEditProduct);
         
+		// A button to cancel your edits to the product
         btnCancelProd = new JButton("Cancel Product");
         btnCancelProd.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -218,20 +251,22 @@ public class EditProduct {
         btnCancelProd.setBounds(226, 444, 146, 21);
         editProductPanel.add(btnCancelProd);
         
+        // A label that display to the user product category
         lblProductQuantity = new JLabel("Product Quantity");
         lblProductQuantity.setBounds(33, 316, 114, 13);
         editProductPanel.add(lblProductQuantity);
         
+        // A spinner for product quantity inputs
         spinnerProductQuantity = new JSpinner();
         spinnerProductQuantity.setToolTipText("Enter the number of products if applicable");
         spinnerProductQuantity.setBounds(214, 313, 179, 20);
         editProductPanel.add(spinnerProductQuantity);
         
         
-        frmEditProduct.setBounds(100, 100, 500, 600);
-        frmEditProduct.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
     }
 
+    // Function that will set the item in a combobox based on a string value
     private void setComboBoxSelection(JComboBox<String> comboBox, String value) {
         for (int i = 0; i < comboBox.getItemCount(); i++) {
             if (comboBox.getItemAt(i).equals(value)) {
@@ -241,6 +276,7 @@ public class EditProduct {
         }
     }
     
+    // Function that will make the changes of a product to the database with the current values 
     private void updateProduct() {
         try {
             // Get updated values from form
@@ -257,7 +293,7 @@ public class EditProduct {
             int timeSpent = txtTimeSpent.getText().isEmpty() ? 0 : 
                           Integer.parseInt(txtTimeSpent.getText().trim());
 
-            // Validate inputs
+            // Will validate inputs
             if (name.isEmpty() || type.isEmpty() || status.isEmpty() || category.isEmpty()) {
                 JOptionPane.showMessageDialog(frmEditProduct, 
                     "Please fill in all required fields", 
@@ -269,7 +305,7 @@ public class EditProduct {
             conn.setAutoCommit(false);
             
             try {
-                // Update items table
+                // Will update the items table
                 String query = "UPDATE items SET ITEM_NM=?, ITEM_TYPE_DE=?, QUILT_PATTERN_CD=?, " +
                              "ITEM_STATUS_CD=?, CATEGORY_CD=?, MATERIAL_COST_AM=?, COOZIE_SIZE_DE=? " +
                              "WHERE ITEM_ID=?";
@@ -286,31 +322,34 @@ public class EditProduct {
                     stmt.executeUpdate();
                 }
 
-                // Update sales or donations based on category
+                // Will allow updates to sale or donations based on category
                 if ("Sell".equals(category)) {
                     updateSalesTable(sellPrice, quantity);
                 } else if ("Donate".equals(category)) {
                     updateDonationsTable(quantity);
                 }
 
-                // Update time logs if time spent was provided
+                // Will update the time logs if time spent was provided
                 if (timeSpent > 0) {
                     updateTimeLogs(timeSpent);
                 }
-
+                
+                // Will commit transaction if all the updates are successful
                 conn.commit();
                 JOptionPane.showMessageDialog(frmEditProduct, 
                     "Product updated successfully!", 
                     "Success", JOptionPane.INFORMATION_MESSAGE);
                 
-                // Return to Products window
+                // Will return to Products window
                 frmEditProduct.dispose();
                 Products productsWindow = new Products();
                 productsWindow.frmProducts.setVisible(true);
             } catch (SQLException e) {
-                conn.rollback();
+                // Will rollback transaction if any error occurs
+            	conn.rollback();
                 throw e;
             } finally {
+            	// Will restore the auto-commit mode
                 conn.setAutoCommit(true);
             }
         } catch (NumberFormatException e) {
@@ -324,13 +363,14 @@ public class EditProduct {
         }
     }
     
+    // Function that will allow updates to the sales table for the current products
     private void updateSalesTable(double sellPrice, int quantity) throws SQLException {
-        // First check if a sale record exists
+        // Will first check if a sale record exists
         String checkQuery = "SELECT 1 FROM sales WHERE ITEM_ID = ?";
         try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
             checkStmt.setInt(1, currentProductId);
             if (checkStmt.executeQuery().next()) {
-                // Update existing sale
+                // Updates the existing sale
                 String updateQuery = "UPDATE sales SET SALE_PRICE_AM=?, QUANTITY_SOLD_NO=? " +
                                     "WHERE ITEM_ID=?";
                 try (PreparedStatement updateStmt = conn.prepareStatement(updateQuery)) {
@@ -340,7 +380,7 @@ public class EditProduct {
                     updateStmt.executeUpdate();
                 }
             } else {
-                // Insert new sale
+                // Will insert new sale
                 String insertQuery = "INSERT INTO sales (ITEM_ID, SALE_DT, SALE_PRICE_AM, QUANTITY_SOLD_NO) " +
                                    "VALUES (?, CURRENT_DATE, ?, ?)";
                 try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
@@ -352,7 +392,8 @@ public class EditProduct {
             }
         }
     }
-
+    
+    // Function that will update the donations table for the current product
     private void updateDonationsTable(int quantity) throws SQLException {
         // Similar logic to updateSalesTable but for donations
         String checkQuery = "SELECT 1 FROM donations WHERE ITEM_ID = ?";
@@ -380,13 +421,13 @@ public class EditProduct {
         }
     }
 
+    // Function that update the time logs table for the current product
     private void updateTimeLogs(int timeSpent) throws SQLException {
-        // Similar logic for time logs
         String checkQuery = "SELECT 1 FROM time_logs WHERE ITEM_ID = ?";
         try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
             checkStmt.setInt(1, currentProductId);
             if (checkStmt.executeQuery().next()) {
-                // Update existing time log
+                // Updates an existing time log
                 String updateQuery = "UPDATE time_logs SET TIME_SPENT_NO=? " +
                                      "WHERE ITEM_ID=?";
                 try (PreparedStatement updateStmt = conn.prepareStatement(updateQuery)) {
@@ -395,7 +436,7 @@ public class EditProduct {
                     updateStmt.executeUpdate();
                 }
             } else {
-                // Insert new time log
+                // Will insert new time log
                 String insertQuery = "INSERT INTO time_logs (ITEM_ID, TIME_SPENT_NO) " +
                                     "VALUES (?, ?)";
                 try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {

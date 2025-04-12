@@ -1,12 +1,10 @@
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.sql.Connection;
-// import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-// import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Collections;
 import javax.swing.JFrame;
@@ -31,7 +29,6 @@ import java.awt.event.ActionEvent;
 import javax.swing.JScrollPane;
 import java.awt.Font;
 import java.awt.FontFormatException;
-// import javax.swing.JToggleButton;
 import javax.swing.JSpinner;
 
 public class Products {
@@ -55,7 +52,9 @@ public class Products {
     private JTextField txtProductId;
     private JTextField txtItemType;
     
-    
+    /**
+     * Launch the application.
+     */
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -69,14 +68,20 @@ public class Products {
         });
     }
 
+    /**
+     * Constructor for the Products class
+     * Initializes the database connection and UI component
+     */
 
+    
     public Products() {
 	    try {
+	    	// Load JDBC driver and establish database connection
 	        Class.forName("org.sqlite.JDBC");
-	        // Fix the path as suggested above
 	        String dbPath = new File("database/mamaspiddlins.sqlite").getAbsolutePath();
 	        conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
 	        
+	        // In case of unsuccessful connection to initialize UI components
 	        if (conn != null) {
 	            System.out.println("Connection successful");
 	            initialize();
@@ -94,10 +99,12 @@ public class Products {
 	}
 
     /**
-     * Initialize the contents of the frame.
+     * Initialize the contents of the frame
+     * Sets up all UI components such as tabs, tables, and buttons
      * @wbp.parser.entryPoint
      */
     private void initialize() {
+    	
 		// The beginning setup for the Products Page
 		frmProducts = new JFrame();
 		frmProducts.setTitle("Products");
@@ -158,7 +165,7 @@ public class Products {
 		lblCoozieSize.setBounds(95, 110, 114, 13);
 		panelAddProd.add(lblCoozieSize);
 		
-		// A textfield to add new products based on coozie size into database 
+		// A combobox to add new products based on coozie size into database 
 		String[] sortCoozieSize = new String [] {"","Small", "Medium", "Large"};
 		cboxCoozieSize = new JComboBox<>(sortCoozieSize);
 		cboxCoozieSize.setToolTipText("Choose coozie size if applicable");
@@ -226,7 +233,6 @@ public class Products {
         cboxDonSelAdd.setBounds(276, 306, 179, 21);
         panelAddProd.add(cboxDonSelAdd);
         
-        
 		// A label that will display to the user product sell prices
 		JLabel lblProductDSPrices = new JLabel("Product Sell Prices");
 		lblProductDSPrices.setBounds(95, 406, 161, 13);
@@ -271,10 +277,12 @@ public class Products {
         btnCancelProd.setBounds(289, 493, 135, 21);
         panelAddProd.add(btnCancelProd);
         
+        // A label that display to the user product category
         JLabel lblProductQuantity = new JLabel("Product Quantity");
         lblProductQuantity.setBounds(95, 358, 114, 13);
         panelAddProd.add(lblProductQuantity);
         
+        // A spinner for product quantity inputs
         spinnerProductQuantity = new JSpinner();
         spinnerProductQuantity.setModel(new SpinnerNumberModel(1, 1, 1000, 1));
         spinnerProductQuantity.setToolTipText("Enter the number of products if applicable");
@@ -283,6 +291,8 @@ public class Products {
         
         // *******************************************************************************************************
         // Edit Products Components
+        
+		// Allows user to view a table with associated columns within the Edit Product tab
         tblProducts = new JTable();
         tblProducts.setModel(new DefaultTableModel(
             new Object[][] {},
@@ -290,14 +300,17 @@ public class Products {
                          "Product Pattern", "Product Category","Product Date", "Coozie Size", "Material Cost"}
         ));
         
+        // Disable editing in the table
         tblProducts.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tblProducts.setDefaultEditor(Object.class, null);
         tblProducts.getTableHeader().setReorderingAllowed(false);
         tblProducts.getTableHeader().setResizingAllowed(false);
         
+		// Will be used to allow sorting for the tables by ascending/descending order
         TableRowSorter<DefaultTableModel> productSorter = new TableRowSorter<>((DefaultTableModel) tblProducts.getModel());
         tblProducts.setRowSorter(productSorter);
 
+		// Will allow the sorting by column header
         tblProducts.getTableHeader().addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 int column = tblProducts.columnAtPoint(evt.getPoint());
@@ -309,6 +322,7 @@ public class Products {
                 }
             }
         });    
+        
         
 		// The table that that will display the information to the user 
         JScrollPane scrollPaneEditProduct = new JScrollPane(tblProducts);
@@ -349,6 +363,8 @@ public class Products {
         
         // *******************************************************************************************************
         // Delete Products Components
+        
+		// Allows user to view a table with associated columns within the Delete Product tab
         tblList = new JTable();
         tblList.setModel(new DefaultTableModel(
             new Object[][]{},
@@ -420,7 +436,6 @@ public class Products {
                 }
             }
         });
-
         btnDeleteProduct.setBounds(194, 386, 124, 21);
         panelDeleteProd.add(btnDeleteProduct);
         
@@ -453,9 +468,10 @@ public class Products {
         editProductInfo();
     }
     
-    // TEST ME
+    // Function that will hand the edit product based on validating input and opening a new window
     private void editProduct() {
-        String productIdStr = txtProductId.getText().trim();
+        // Will validate the input, and display message if empty
+    	String productIdStr = txtProductId.getText().trim();
         
         if (productIdStr.isEmpty()) {
             JOptionPane.showMessageDialog(frmProducts, "Search bar cannot be empty. Please enter a valid value.", 
@@ -466,12 +482,13 @@ public class Products {
         try {
             int productId = Integer.parseInt(productIdStr);
             
+            // Will check if product exists within the database
             if (!productExists(productId)) {
                 JOptionPane.showMessageDialog(frmProducts, "Product ID " + productId + " not found", 
                     "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            
+            // Will open window to edit the product
             openEditProductWindow(productId);
             
         } catch (NumberFormatException e) {
@@ -483,16 +500,17 @@ public class Products {
         }
     }
 
-    // TEST ME
+    // Function that will check if product's ID actually exists in the database
     private boolean productExists(int productId) throws SQLException {
         String query = "SELECT 1 FROM items WHERE ITEM_ID = ?";
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, productId);
+            // Returns true if a record does exist. 
             return stmt.executeQuery().next();
         }
     }
 
-    // TEST ME
+    // Function that opens the window for the specified product
     private void openEditProductWindow(int productId) throws SQLException {
         String query = "SELECT * FROM items WHERE ITEM_ID = ?";
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -518,6 +536,7 @@ public class Products {
         }
     }
     
+    // Function that will check the quantity of a product from either sales or donations table
     private int getProductQuantity(int itemId) throws SQLException {
         // First check sales table
         String salesQuery = "SELECT QUANTITY_SOLD_NO FROM sales WHERE ITEM_ID = ?";
@@ -542,7 +561,7 @@ public class Products {
         return 0; // Default if not found in either table
     }
     
-	// FIX ME
+    // Function that will allow the user to add a new product to the database
     private void addProduct() {
         // Get all input values
         String prodName = txtProdName.getText().trim();
@@ -664,6 +683,7 @@ public class Products {
         }
     }
 
+    // Function that will add the product to the sales table once created
     private void addToSalesTable(int itemId, double sellPrice, int quantity) throws SQLException {
         String salesQuery = "INSERT INTO sales (ITEM_ID, SALE_DT, QUANTITY_SOLD_NO, SALE_PRICE_AM) " +
                           "VALUES (?, ?, ?, ?)";
@@ -675,7 +695,8 @@ public class Products {
             salesStmt.executeUpdate();
         }
     }
-
+    
+    // Function that will add the product to the donations table once created 
     private void addToDonationsTable(int itemId, int quantity) throws SQLException {
         String donationsQuery = "INSERT INTO donations (ITEM_ID, DONATION_DT, QUANTITY_DONATED_NO) " +
                               "VALUES (?, ?, ?)";
@@ -686,7 +707,8 @@ public class Products {
             donationsStmt.executeUpdate();
         }
     }
-
+    
+    // Function that will add the time spent on a product to the times log table
     private void addToTimeLogs(int itemId, int timeSpent) throws SQLException {
         String timeQuery = "INSERT INTO time_logs (ITEM_ID, TIME_SPENT_NO) VALUES (?, ?)";
         try (PreparedStatement timeStmt = conn.prepareStatement(timeQuery)) {
@@ -696,6 +718,7 @@ public class Products {
         }
     }
 
+    // Function that will allow the user to clear all options in case to restart
     private void clearAddProductForm() {
         txtProdName.setText("");
         txtProdPattern.setText("");
@@ -709,7 +732,7 @@ public class Products {
         spinnerProductQuantity.setValue(0);
     }
 
-    // First check if the product exists
+    // Function that will delete a product and along with its associated information from the database
         private void deleteProduct(int productDelete) {
             if (productDelete <= 0) {
                 JOptionPane.showMessageDialog(frmProducts, 
@@ -786,7 +809,7 @@ public class Products {
                 }
             } catch (SQLException e) {
                 try {
-                    conn.rollback(); // Rollback on error
+                    conn.rollback(); // Rollbacks on errors
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }

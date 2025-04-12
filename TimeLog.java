@@ -55,7 +55,6 @@ public class TimeLog {
 	public TimeLog() {
 	    try {
 	        Class.forName("org.sqlite.JDBC");
-	        // Fix the path as suggested above
 	        String dbPath = new File("database/mamaspiddlins.sqlite").getAbsolutePath();
 	        conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
 	        
@@ -79,6 +78,7 @@ public class TimeLog {
 	 * Initialize the contents of the frame.
 	 * @wbp.parser.entryPoint
 	 */
+	
 	private void initialize() {
 		// Has to be initialized first before the rest to load the data
 		// Allows user to view a table with associated columns within the Time tab
@@ -119,14 +119,7 @@ public class TimeLog {
 		frmTimeLog.getContentPane().setBackground(new Color(216, 203, 175));
 		frmTimeLog.getContentPane().setLayout(null);
 		
-		
-		// The label that will display the title of the page
-//		JLabel lblTimeLog = new JLabel("Time Log");
-//		lblTimeLog.setBounds(29, 39, 139, 27);
-//		frmTimeLog.getContentPane().add(lblTimeLog);
-//		lblTimeLog.setFont(new Font("Tahoma", Font.BOLD, 10));
-		
-		
+	
 		
 		// The label that will display the title of the page
 		JLabel lblTimeLog = new JLabel("Time Log");
@@ -171,6 +164,7 @@ public class TimeLog {
 		frmTimeLog.getContentPane().add(backgroundPanel);
 		backgroundPanel.setLayout(null);
 		
+		// Will allow the table to reset/refresh to see all data
 		JButton btnReturn = new JButton("Reset");
 		btnReturn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -212,7 +206,6 @@ public class TimeLog {
 	        DefaultTableModel model = (DefaultTableModel) tblTime.getModel();
 	        model.setRowCount(0);  // Clear existing rows
 
-	        // Assuming result set has 4 columns
 	        while (rs.next()) {
 	            model.addRow(new Object[] {
 	                rs.getInt("TIME_LOG_ID"),
@@ -229,10 +222,7 @@ public class TimeLog {
 	    }
 	}
 
-	
-	
-	// Function to allow the user to fetch and search time log information
-	// FIX ME
+
 	// Function to allow the user to fetch and search time log information
 	private void searchTimeLog(String searchTerm) {
 	    // Check if the input is empty
