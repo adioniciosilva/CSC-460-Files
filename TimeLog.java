@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.awt.event.ActionEvent;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
-//import java.awt.Component;
 
 public class TimeLog {
 
@@ -51,7 +50,11 @@ public class TimeLog {
 			}
 		});
 	}
-
+	
+	/**
+	 * Create the application.
+	 */
+	
 	public TimeLog() {
 	    try {
 	        Class.forName("org.sqlite.JDBC");
