@@ -57,6 +57,8 @@ public class Financials {
     private JSpinner spinnerQuantitySold;
     private JLabel lblDisplayRecommended;
     private JLabel lblDisplayAdjusted;
+    private final DateTimeFormatter dbFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
+    private final DateTimeFormatter displayFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     
     /**
      * Launch the application.
@@ -639,6 +641,32 @@ public class Financials {
                 BigDecimal materialCost = rs.getBigDecimal("MATERIAL_COST_AM");
                 BigDecimal salePrice = rs.getBigDecimal("SALE_PRICE_AM");
                 
+                // Format dates
+                String saleDateStr = rs.getString("SALE_DT");
+                String displayDate;
+                try {
+                    LocalDate saleDate = LocalDate.parse(saleDateStr, dbFormatter);
+                    displayDate = saleDate.format(displayFormatter);
+                } catch (DateTimeParseException e1) {
+                    try {
+                        if (saleDateStr.matches("\\d+")) {
+                            long timestamp = Long.parseLong(saleDateStr);
+                            if (saleDateStr.length() > 10) timestamp /= 1000;
+                            LocalDate saleDate = LocalDate.ofEpochDay(timestamp / 86400);
+                            displayDate = saleDate.format(displayFormatter);
+                            updateSaleDate(rs.getInt("ITEM_ID"), saleDate);
+                        } else {
+                            displayDate = "Invalid Date";
+                        }
+                    } catch (NumberFormatException e2) {
+                        displayDate = "Invalid Date";
+                    }
+                }
+                
+                // Format the numbers to always show 2 decimal places
+                String formattedMaterialCost = String.format("%.2f", materialCost);
+                String formattedSalePrice = String.format("%.2f", salePrice);
+            
                 // Will update the total amount
                 totalRevenue = totalRevenue.add(salePrice);
                 totalMaterialCost = totalMaterialCost.add(materialCost); // No quantity multiplier
@@ -647,16 +675,15 @@ public class Financials {
                 model.addRow(new Object[]{
                     rs.getInt("ITEM_ID"),
                     rs.getString("ITEM_NM"),
-                    materialCost,
-                    rs.getString("SALE_DT"),
+                    formattedMaterialCost,
+                    displayDate,
                     rs.getInt("QUANTITY_SOLD_NO"),
-                    salePrice
+                    formattedSalePrice
                 });
             }
 
             // Calculate and display based on formula, profit = revenue - material costs 
             BigDecimal totalProfit = totalRevenue.subtract(totalMaterialCost);
-
             lblDisplayRevenue.setText(String.format("$%.2f", totalRevenue));
             lblDisplayProfit.setText(String.format("$%.2f", totalProfit));
 
@@ -671,7 +698,7 @@ public class Financials {
     private void updateDonationDate(int donationId, LocalDate correctDate) {
         String updateQuery = "UPDATE donations SET DONATION_DT = ? WHERE DONATION_ID = ?";
         try (PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
-            stmt.setString(1, correctDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
+            stmt.setString(1, correctDate.format(dbFormatter));
             stmt.setInt(2, donationId);
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -693,14 +720,40 @@ public class Financials {
 
             BigDecimal totalRevenue = BigDecimal.ZERO;
             BigDecimal totalMaterialCost = BigDecimal.ZERO; // Sum of material costs (no quantity)
-            DateTimeFormatter dbFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
-            DateTimeFormatter displayFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
             while (rs.next()) {
                 BigDecimal materialCost = rs.getBigDecimal("MATERIAL_COST_AM");
                 BigDecimal salePrice = rs.getBigDecimal("SALE_PRICE_AM");
                 int quantity = rs.getInt("QUANTITY_SOLD_NO");
-
+                
+                String saleDateStr = rs.getString("SALE_DT");
+                String displayDate;
+                try {
+                    // First try ISO format
+                    LocalDate saleDate = LocalDate.parse(saleDateStr, dbFormatter);
+                    displayDate = saleDate.format(displayFormatter);
+                } catch (DateTimeParseException e1) {
+                    try {
+                        // If that fails, try timestamp format
+                        if (saleDateStr.matches("\\d+")) {
+                            long timestamp = Long.parseLong(saleDateStr);
+                            if (saleDateStr.length() > 10) timestamp /= 1000;
+                            LocalDate saleDate = LocalDate.ofEpochDay(timestamp / 86400);
+                            displayDate = saleDate.format(displayFormatter);
+                            // Update the database with corrected date
+                            updateSaleDate(rs.getInt("ITEM_ID"), saleDate);
+                        } else {
+                            displayDate = "Invalid Date";
+                        }
+                    } catch (NumberFormatException e2) {
+                        displayDate = "Invalid Date";
+                    }
+                }
+                
+                // Format the numbers to always show 2 decimal places
+                String formattedMaterialCost = String.format("%.2f", materialCost);
+                String formattedSalePrice = String.format("%.2f", salePrice);
+                		
                 // Revenue: Sum of sale prices (no quantity multiplier)
                 totalRevenue = totalRevenue.add(salePrice);
 
@@ -711,10 +764,10 @@ public class Financials {
                 model.addRow(new Object[]{
                     rs.getInt("ITEM_ID"),
                     rs.getString("ITEM_NM"),
-                    materialCost,
-                    rs.getString("SALE_DT"), // Directly display date (formatting omitted for brevity)
+                    formattedMaterialCost,
+                    displayDate, // Directly display date (formatting omitted for brevity)
                     quantity,
-                    salePrice
+                    formattedSalePrice      
                 });
             }
 
@@ -729,6 +782,17 @@ public class Financials {
             JOptionPane.showMessageDialog(frmFinancials, "Error loading financial data: " + ex.getMessage(),
                                         "Error", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
+        }
+    }
+    private void updateSaleDate(int itemId, LocalDate correctDate) {
+        String updateQuery = "UPDATE sales SET SALE_DT = ? WHERE ITEM_ID = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
+            stmt.setString(1, correctDate.format(dbFormatter));
+            stmt.setInt(2, itemId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error updating sale date for item " + itemId);
+            e.printStackTrace();
         }
     }
     

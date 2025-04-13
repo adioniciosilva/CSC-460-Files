@@ -3,6 +3,7 @@ import java.awt.EventQueue;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -62,48 +63,88 @@ public class EditProduct {
     public EditProduct(int productId, String name, String type, String pattern, 
             String status, String category, double materialCost, 
             String coozieSize, int quantity) {
-		this.currentProductId = productId;
-	    try {
-	        Class.forName("org.sqlite.JDBC");
-	        // Fix the path as suggested above
-	        String dbPath = new File("database/mamaspiddlins.sqlite").getAbsolutePath();
-	        conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
-	        
-	        if (conn != null) {
-	            System.out.println("Connection successful");
-	            initialize();
-	        } else {
-	            JOptionPane.showMessageDialog(null, "Failed to connect to database", 
-	                "Error", JOptionPane.ERROR_MESSAGE);
-	            System.exit(1);
-	        }
-	    } catch (SQLException | ClassNotFoundException e) {
-	        JOptionPane.showMessageDialog(null, "Database error: " + e.getMessage(), 
-	            "Error", JOptionPane.ERROR_MESSAGE);
-	        e.printStackTrace();
-	        System.exit(1);
-	    }
-	
+        this.currentProductId = productId;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            // Fix the path as suggested above
+            String dbPath = new File("database/mamaspiddlins.sqlite").getAbsolutePath();
+            conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
+            
+            if (conn != null) {
+                System.out.println("Connection successful");
+                initialize();
+                
+                // Set the fields with the product data
+                txtProdName.setText(name);
+                txtItemType.setText(type);
+                txtProdPattern.setText(pattern);
+                txtMaterialCost.setText(String.valueOf(materialCost));
+                spinnerProductQuantity.setValue(quantity);  // Set the quantity spinner
 
-		// Set the fields with the product data
-		txtProdName.setText(name);
-		txtItemType.setText(type);
-		txtProdPattern.setText(pattern);
-		txtMaterialCost.setText(String.valueOf(materialCost));
-	    spinnerProductQuantity.setValue(quantity);  // Set the quantity spinner
+                // Set combo box selections
+                setComboBoxSelection(cboxProductStatusAdd, status);
+                setComboBoxSelection(cboxDonSelAdd, category);
+                setComboBoxSelection(cboxCoozieSize, coozieSize);
+                
+                // Load additional data from related tables
+                loadAdditionalProductData();
+                
+                // Update the Save Changes button to handle updates
+                btnEditProduct.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        updateProduct();
+                    }
+                });
+            } else {
+                JOptionPane.showMessageDialog(null, "Failed to connect to database", 
+                    "Error", JOptionPane.ERROR_MESSAGE);
+                System.exit(1);
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            JOptionPane.showMessageDialog(null, "Database error: " + e.getMessage(), 
+                "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
 
-		// Set combo box selections
-		setComboBoxSelection(cboxProductStatusAdd, status);
-		setComboBoxSelection(cboxDonSelAdd, category);
-		setComboBoxSelection(cboxCoozieSize, coozieSize);
-		
-		// Update the Save Changes button to handle updates
-		btnEditProduct.addActionListener(new ActionListener() {
-		  public void actionPerformed(ActionEvent e) {
-		      updateProduct();
-		  	}
-		});
-	}
+    // Method to load additional product data from related tables
+    private void loadAdditionalProductData() throws SQLException {
+        // Load time spent from time_logs table
+        String timeQuery = "SELECT TIME_SPENT_NO FROM time_logs WHERE ITEM_ID = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(timeQuery)) {
+            stmt.setInt(1, currentProductId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                txtTimeSpent.setText(String.valueOf(rs.getInt("TIME_SPENT_NO")));
+            }
+        }
+        
+        // Load sale price from sales table (only for Sell category)
+        String category = (String) cboxDonSelAdd.getSelectedItem();
+        if ("Sell".equals(category)) {
+            String salesQuery = "SELECT SALE_PRICE_AM, QUANTITY_SOLD_NO FROM sales WHERE ITEM_ID = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(salesQuery)) {
+                stmt.setInt(1, currentProductId);
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    txtProdDSPrices.setText(String.valueOf(rs.getDouble("SALE_PRICE_AM")));
+                    spinnerProductQuantity.setValue(rs.getInt("QUANTITY_SOLD_NO"));
+                }
+            }
+        } else if ("Donate".equals(category)) {
+            // Load quantity from donations table
+            String donationsQuery = "SELECT QUANTITY_DONATED_NO FROM donations WHERE ITEM_ID = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(donationsQuery)) {
+                stmt.setInt(1, currentProductId);
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    spinnerProductQuantity.setValue(rs.getInt("QUANTITY_DONATED_NO"));
+                }
+            }
+        }
+    }
+
 
     /**
      * Initialize the contents of the frame.

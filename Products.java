@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -51,6 +53,8 @@ public class Products {
     private JComboBox<String> cboxCoozieSize;
     private JTextField txtProductId;
     private JTextField txtItemType;
+    private final DateTimeFormatter dbFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
+    private final DateTimeFormatter displayFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     
     /**
      * Launch the application.
@@ -563,7 +567,7 @@ public class Products {
     
     // Function that will allow the user to add a new product to the database
     private void addProduct() {
-        // Get all input values
+        // Get all input values (same as before)
         String prodName = txtProdName.getText().trim();
         String prodPattern = txtProdPattern.getText().trim();
         String materialCostStr = txtMaterialCost.getText().trim();
@@ -575,17 +579,17 @@ public class Products {
         String timeSpentStr = txtTimeSpent.getText().trim();
         int quantity = (int) spinnerProductQuantity.getValue();
 
-        // Validate required fields
+        // Input validation (same as before)
         if (prodName.isEmpty() || itemType.isEmpty() || productStatus == null || 
             productStatus.isEmpty() || category == null || category.isEmpty() || 
             materialCostStr.isEmpty()) {
             JOptionPane.showMessageDialog(frmProducts, 
-                "Please fill in all the required fields (Name, Type, Status, Category, Material Cost).", 
+                "Please fill in all required fields (Name, Type, Status, Category, Material Cost).", 
                 "Validation Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        // Validate quilt pattern (only for quilts)
+        // Additional validations (same as before)
         if (itemType.equalsIgnoreCase("quilt") && prodPattern.isEmpty()) {
             JOptionPane.showMessageDialog(frmProducts, 
                 "Quilt pattern is required for quilt items.", 
@@ -593,7 +597,6 @@ public class Products {
             return;
         }
         
-        // Validate coozie size (only for coozies)
         if (itemType.equalsIgnoreCase("coozie") && (coozieSize == null || coozieSize.isEmpty())) {
             JOptionPane.showMessageDialog(frmProducts, 
                 "Coozie size is required for coozie items.", 
@@ -601,7 +604,6 @@ public class Products {
             return;
         }
 
-        // Validate quantity for Sell/Donate categories
         if (("Sell".equals(category) || "Donate".equals(category))) {
             if (quantity <= 0) {
                 JOptionPane.showMessageDialog(frmProducts, 
@@ -610,11 +612,10 @@ public class Products {
                 return;
             }
         } else {
-            // For Inventory items, quantity should be 1
             quantity = 1;
         }
 
-        // Parse numeric values
+        // Parse numeric values (same as before)
         double materialCost = 0.0;
         double sellPrice = 0.0;
         int timeSpent = 0;
@@ -622,7 +623,6 @@ public class Products {
         try {
             materialCost = Double.parseDouble(materialCostStr);
             
-            // Validate sell price for Sell category
             if ("Sell".equals(category)) {
                 if (sellPriceStr.isEmpty()) {
                     JOptionPane.showMessageDialog(frmProducts, 
@@ -633,7 +633,7 @@ public class Products {
                 sellPrice = Double.parseDouble(sellPriceStr);
                 if (sellPrice <= 0) {
                     JOptionPane.showMessageDialog(frmProducts, 
-                        "Please enter a valid sell price (greater than 0) for Sell category.", 
+                        "Please enter a valid sell price (greater than 0).", 
                         "Validation Error", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
@@ -641,6 +641,12 @@ public class Products {
             
             if (!timeSpentStr.isEmpty()) {
                 timeSpent = Integer.parseInt(timeSpentStr);
+                if (timeSpent <= 0) {
+                    JOptionPane.showMessageDialog(frmProducts, 
+                        "Please enter a valid time spent (greater than 0).", 
+                        "Validation Error", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
             }
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(frmProducts, 
@@ -649,94 +655,108 @@ public class Products {
             return;
         }
 
-        // Get current date
-        String currentDate = LocalDate.now().toString();
-        
-        // Prepare SQL query
-        String query = "INSERT INTO items (ITEM_NM, ITEM_TYPE_DE, ITEM_STATUS_CD, " +
-                     "QUILT_PATTERN_CD, CATEGORY_CD, DATE_CREATED_DT, " +
-                     "COOZIE_SIZE_DE, MATERIAL_COST_AM) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
-        try (PreparedStatement stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
-            // Set parameters
-            stmt.setString(1, prodName);
-            stmt.setString(2, itemType);
-            stmt.setString(3, productStatus);
-            stmt.setString(4, itemType.equalsIgnoreCase("quilt") ? prodPattern : null);
-            stmt.setString(5, category);
-            stmt.setString(6, currentDate);
-            stmt.setString(7, itemType.equalsIgnoreCase("coozie") ? coozieSize : null);
-            stmt.setDouble(8, materialCost);
-
-            // Execute insert
-            int rowsInserted = stmt.executeUpdate();
+        // Start transaction
+        try {
+            conn.setAutoCommit(false);
             
-            if (rowsInserted > 0) {
-                // Get the generated item ID
-                ResultSet generatedKeys = stmt.getGeneratedKeys();
-                int itemId = -1;
-                if (generatedKeys.next()) {
-                    itemId = generatedKeys.getInt(1);
+            // Insert into items table
+            String itemQuery = "INSERT INTO items (ITEM_NM, ITEM_TYPE_DE, ITEM_STATUS_CD, " +
+                             "QUILT_PATTERN_CD, CATEGORY_CD, DATE_CREATED_DT, " +
+                             "COOZIE_SIZE_DE, MATERIAL_COST_AM) " +
+                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            
+            int itemId = -1;
+            try (PreparedStatement itemStmt = conn.prepareStatement(itemQuery, PreparedStatement.RETURN_GENERATED_KEYS)) {
+                itemStmt.setString(1, prodName);
+                itemStmt.setString(2, itemType);
+                itemStmt.setString(3, productStatus);
+                itemStmt.setString(4, itemType.equalsIgnoreCase("quilt") ? prodPattern : null);
+                itemStmt.setString(5, category);
+                itemStmt.setString(6, LocalDate.now().format(dbFormatter));
+                itemStmt.setString(7, itemType.equalsIgnoreCase("coozie") ? coozieSize : null);
+                itemStmt.setDouble(8, materialCost);
+                
+                int affectedRows = itemStmt.executeUpdate();
+                
+                if (affectedRows == 0) {
+                    throw new SQLException("Creating item failed, no rows affected.");
                 }
                 
-                // Handle sales or donations based on category
-                if ("Sell".equals(category)) {
-                    addToSalesTable(itemId, sellPrice, quantity);
-                } else if ("Donate".equals(category)) {
-                    addToDonationsTable(itemId, quantity);
+                try (ResultSet generatedKeys = itemStmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        itemId = generatedKeys.getInt(1);
+                    } else {
+                        throw new SQLException("Creating item failed, no ID obtained.");
+                    }
                 }
-                
-                // If time spent was provided, add to time logs
-                if (timeSpent > 0) {
-                    addToTimeLogs(itemId, timeSpent);
-                }
-
-                JOptionPane.showMessageDialog(frmProducts, 
-                    "Product added successfully with ID: " + itemId, 
-                    "Success", JOptionPane.INFORMATION_MESSAGE);
-                
-                // Clear form
-                clearAddProductForm();
-                
-                // Refresh tables
-                viewProductInfo();
-                editProductInfo();
             }
+            
+            // Use helper methods for related tables
+            if ("Sell".equals(category)) {
+                addToSalesTable(itemId, sellPrice, quantity);  // Using your helper method
+            } else if ("Donate".equals(category)) {
+                addToDonationsTable(itemId, quantity);  // Using your helper method
+            }
+            
+            if (!timeSpentStr.isEmpty() && timeSpent > 0) {
+                addToTimeLogs(itemId, timeSpent);  // Using your helper method
+            }
+            
+            // Commit transaction
+            conn.commit();
+            
+            JOptionPane.showMessageDialog(frmProducts, 
+                "Product added successfully with ID: " + itemId, 
+                "Success", JOptionPane.INFORMATION_MESSAGE);
+            
+            clearAddProductForm();
+            viewProductInfo();
+            editProductInfo();
+            
         } catch (SQLException ex) {
+            try {
+                conn.rollback();
+            } catch (SQLException e) {
+                ex.addSuppressed(e);
+            }
             JOptionPane.showMessageDialog(frmProducts, 
                 "Database error: " + ex.getMessage(), 
                 "Error", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
+        } finally {
+            try {
+                conn.setAutoCommit(true);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
-    // Function that will add the product to the sales table once created
+    // Your existing helper methods remain exactly the same:
     private void addToSalesTable(int itemId, double sellPrice, int quantity) throws SQLException {
         String salesQuery = "INSERT INTO sales (ITEM_ID, SALE_DT, QUANTITY_SOLD_NO, SALE_PRICE_AM) " +
                           "VALUES (?, ?, ?, ?)";
         try (PreparedStatement salesStmt = conn.prepareStatement(salesQuery)) {
             salesStmt.setInt(1, itemId);
-            salesStmt.setDate(2, new java.sql.Date(System.currentTimeMillis()));
+            salesStmt.setString(2, LocalDate.now().format(dbFormatter));  // Use formatted current date
             salesStmt.setInt(3, quantity);
             salesStmt.setDouble(4, sellPrice);
             salesStmt.executeUpdate();
         }
     }
     
-    // Function that will add the product to the donations table once created 
+
     private void addToDonationsTable(int itemId, int quantity) throws SQLException {
         String donationsQuery = "INSERT INTO donations (ITEM_ID, DONATION_DT, QUANTITY_DONATED_NO) " +
                               "VALUES (?, ?, ?)";
         try (PreparedStatement donationsStmt = conn.prepareStatement(donationsQuery)) {
             donationsStmt.setInt(1, itemId);
-            donationsStmt.setString(2, LocalDate.now().toString()); // Use ISO format (YYYY-MM-DD)
+            donationsStmt.setString(2, LocalDate.now().format(dbFormatter));
             donationsStmt.setInt(3, quantity);
             donationsStmt.executeUpdate();
         }
     }
-    
-    // Function that will add the time spent on a product to the times log table
+
     private void addToTimeLogs(int itemId, int timeSpent) throws SQLException {
         String timeQuery = "INSERT INTO time_logs (ITEM_ID, TIME_SPENT_NO) VALUES (?, ?)";
         try (PreparedStatement timeStmt = conn.prepareStatement(timeQuery)) {
@@ -887,6 +907,28 @@ public class Products {
             while (rs.next()) {
                 // Get date as string directly
                 String dateStr = rs.getString("DATE_CREATED_DT");
+                String displayDate;
+                try {
+                    LocalDate date = LocalDate.parse(dateStr, dbFormatter);
+                    displayDate = date.format(displayFormatter);
+                } catch (DateTimeParseException e1) {
+                    try {
+                        if (dateStr.matches("\\d+")) {
+                            long timestamp = Long.parseLong(dateStr);
+                            if (dateStr.length() > 10) timestamp /= 1000;
+                            LocalDate date = LocalDate.ofEpochDay(timestamp / 86400);
+                            displayDate = date.format(displayFormatter);
+                            // Update the database with corrected date
+                            updateItemDate(rs.getInt("ITEM_ID"), date);
+                        } else {
+                            displayDate = "Invalid Date";
+                        }
+                    } catch (NumberFormatException e2) {
+                        displayDate = "Invalid Date";
+                    }
+                }
+                // Format material cost with 2 decimal places
+                String formattedMaterialCost = String.format("%.2f", rs.getDouble("MATERIAL_COST_AM"));
                 
                 model.addRow(new Object[] {
                     rs.getInt("ITEM_ID"),
@@ -895,13 +937,28 @@ public class Products {
                     rs.getString("ITEM_STATUS_CD"),
                     rs.getString("QUILT_PATTERN_CD"),
                     rs.getString("CATEGORY_CD"),
-                    dateStr,  // Use the string directly
+                    displayDate,  // Use the string directly
                     rs.getString("COOZIE_SIZE_DE"),
-                    rs.getDouble("MATERIAL_COST_AM")  // Changed to getDouble for decimal values
+                    formattedMaterialCost    // Changed to getDouble for decimal values
                 });
             }
         } catch(SQLException ex) {
+            JOptionPane.showMessageDialog(frmProducts, "Error loading product data: " + ex.getMessage(),
+                                        "Error", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
+        }
+    }
+    
+ // Add this helper method to update item dates
+    private void updateItemDate(int itemId, LocalDate correctDate) {
+        String updateQuery = "UPDATE items SET DATE_CREATED_DT = ? WHERE ITEM_ID = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
+            stmt.setString(1, correctDate.format(dbFormatter));
+            stmt.setInt(2, itemId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error updating item date for item " + itemId);
+            e.printStackTrace();
         }
     }
 }
