@@ -212,6 +212,7 @@ public class Products {
         cboxProductStatusAdd.setToolTipText("Choose current status for the product if applicable");
         cboxProductStatusAdd.setBounds(276, 201, 179, 21);
         panelAddProd.add(cboxProductStatusAdd);
+
         
 		// A textfield to add new products based on material costs into database 
         txtMaterialCost = new JTextField();    
@@ -236,6 +237,8 @@ public class Products {
         cboxDonSelAdd.setToolTipText("Choose the product category");
         cboxDonSelAdd.setBounds(276, 289, 179, 21);
         panelAddProd.add(cboxDonSelAdd);
+        
+        
         
 		// A label that will display to the user product sell prices
 		JLabel lblProductDSPrices = new JLabel("Product Sell Prices");
@@ -288,7 +291,7 @@ public class Products {
         
         // A spinner for product quantity inputs
         spinnerProductQuantity = new JSpinner();
-        spinnerProductQuantity.setModel(new SpinnerNumberModel(1, 1, 1000, 1));
+        spinnerProductQuantity.setModel(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
         spinnerProductQuantity.setToolTipText("Enter the number of products if applicable");
         spinnerProductQuantity.setBounds(276, 336, 179, 20);
         panelAddProd.add(spinnerProductQuantity);
@@ -471,6 +474,13 @@ public class Products {
         viewProductInfo();
         editProductInfo();
     }
+ // Helper method to show consistent warning messages
+    private void showWarning(String title, String message) {
+        JOptionPane.showMessageDialog(frmProducts, 
+            message,
+            title,
+            JOptionPane.WARNING_MESSAGE);
+    }
     
     // Function that will hand the edit product based on validating input and opening a new window
     private void editProduct() {
@@ -580,41 +590,111 @@ public class Products {
         int quantity = (int) spinnerProductQuantity.getValue();
 
         // Input validation (same as before)
-        if (prodName.isEmpty() || itemType.isEmpty() || productStatus == null || 
-            productStatus.isEmpty() || category == null || category.isEmpty() || 
-            materialCostStr.isEmpty()) {
-            JOptionPane.showMessageDialog(frmProducts, 
-                "Please fill in all required fields (Name, Type, Status, Category, Material Cost).", 
-                "Validation Error", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        // Additional validations (same as before)
-        if (itemType.equalsIgnoreCase("quilt") && prodPattern.isEmpty()) {
-            JOptionPane.showMessageDialog(frmProducts, 
-                "Quilt pattern is required for quilt items.", 
-                "Validation Error", JOptionPane.WARNING_MESSAGE);
+        if (prodName.isEmpty()) {
+            showWarning("Required Field", "Please enter a product name.");
+            txtProdName.requestFocus();
             return;
         }
         
-        if (itemType.equalsIgnoreCase("coozie") && (coozieSize == null || coozieSize.isEmpty())) {
-            JOptionPane.showMessageDialog(frmProducts, 
-                "Coozie size is required for coozie items.", 
-                "Validation Error", JOptionPane.WARNING_MESSAGE);
+        if (itemType.isEmpty()) {
+            showWarning("Required Field", "Please specify the product type.");
+            txtItemType.requestFocus();
+            return;
+        }
+        
+        if (productStatus == null || productStatus.isEmpty()) {
+            showWarning("Required Field", "Please select a product status.");
+            cboxProductStatusAdd.requestFocus();
+            return;
+        }
+        
+        if (category == null || category.isEmpty()) {
+            showWarning("Required Field", "Please select a product category.");
+            cboxDonSelAdd.requestFocus();
+            return;
+        }
+        
+        if (materialCostStr.isEmpty()) {
+            showWarning("Required Field", "Please enter the material cost.");
+            txtMaterialCost.requestFocus();
+            return;
+        }
+        // Type-specific validations
+        if (itemType.equalsIgnoreCase("quilt")) {
+            if (prodPattern.isEmpty()) {
+                showWarning("Required Field", "Please enter a quilt pattern for quilt items.");
+                txtProdPattern.requestFocus();
+                return;
+            }
+            // Ensure coozie size is not selected for quilts
+            if (!((String)cboxCoozieSize.getSelectedItem()).isEmpty()) {
+                showWarning("Invalid Selection", "Coozie size should not be selected for quilt items.");
+                cboxCoozieSize.setSelectedIndex(0);
+                cboxCoozieSize.requestFocus();
+                return;
+            }
+        } 
+        else if (itemType.equalsIgnoreCase("coozie")) {
+            if (((String)cboxCoozieSize.getSelectedItem()).isEmpty()) {
+                showWarning("Required Field", "Please select a coozie size for coozie items.");
+                cboxCoozieSize.requestFocus();
+                return;
+            }
+            // Ensure quilt pattern is not entered for coozies
+            if (!prodPattern.isEmpty()) {
+                showWarning("Invalid Entry", "Quilt pattern should not be entered for coozie items.");
+                txtProdPattern.setText("");
+                txtProdPattern.requestFocus();
+                return;
+            }
+        } 
+        else {
+            // For other item types, ensure neither is entered
+            if (!prodPattern.isEmpty()) {
+                showWarning("Invalid Entry", "Quilt pattern should only be entered for quilt items.");
+                txtProdPattern.setText("");
+                txtProdPattern.requestFocus();
+                return;
+            }
+            if (!((String)cboxCoozieSize.getSelectedItem()).isEmpty()) {
+                showWarning("Invalid Selection", "Coozie size should only be selected for coozie items.");
+                cboxCoozieSize.setSelectedIndex(0);
+                cboxCoozieSize.requestFocus();
+                return;
+            }
+        }
+        
+     // Donation-specific validation
+        if ("Donate".equals(category) && !txtProdDSPrices.getText().trim().isEmpty()) {
+            showWarning("Invalid Entry", "Sell price should not be entered for donated items.");
+            txtProdDSPrices.setText("");
+            txtProdDSPrices.requestFocus();
             return;
         }
 
-        if (("Sell".equals(category) || "Donate".equals(category))) {
-            if (quantity <= 0) {
-                JOptionPane.showMessageDialog(frmProducts, 
-                    "Please enter a valid quantity (greater than 0) for Sell or Donate categories.", 
-                    "Validation Error", JOptionPane.WARNING_MESSAGE);
+        if ("Sell".equals(category)) {
+            if (sellPriceStr.isEmpty()) {
+                showWarning("Field Required", "Please enter a sell price for items in sell category.");
+                txtProdDSPrices.requestFocus();
                 return;
             }
-        } else {
-            quantity = 1;
+        }
+        
+        // Category-specific validations
+        if (("Sell".equals(category) || "Donate".equals(category))) {
+            if (quantity <= 0) {
+                showWarning("Invalid Quantity", "Please enter a quantity greater than 0 for sell/donate items.");
+                spinnerProductQuantity.requestFocus();
+                return;
+            }
         }
 
+        if(timeSpentStr.isEmpty()) {
+        	showWarning("Required Field", "Please enter the amount of time spent.");
+        	txtTimeSpent.requestFocus();
+        	return;
+        }
+        
         // Parse numeric values (same as before)
         double materialCost = 0.0;
         double sellPrice = 0.0;
@@ -622,19 +702,23 @@ public class Products {
         
         try {
             materialCost = Double.parseDouble(materialCostStr);
+            if (materialCost <= 0) {
+                showWarning("Invalid Material Cost", "Material cost must be greater than 0.");
+                txtMaterialCost.requestFocus();
+                return;
+            }
             
             if ("Sell".equals(category)) {
                 if (sellPriceStr.isEmpty()) {
-                    JOptionPane.showMessageDialog(frmProducts, 
-                        "Sell price is required for Sell category.", 
-                        "Validation Error", JOptionPane.WARNING_MESSAGE);
+                    showWarning("Field Required", "Please enter a sell price for items in sell category.");
+                    txtProdDSPrices.requestFocus();
                     return;
                 }
                 sellPrice = Double.parseDouble(sellPriceStr);
+                
                 if (sellPrice <= 0) {
-                    JOptionPane.showMessageDialog(frmProducts, 
-                        "Please enter a valid sell price (greater than 0).", 
-                        "Validation Error", JOptionPane.WARNING_MESSAGE);
+                    showWarning("Invalid Sell Price", "Sell price must be greater than 0.");
+                    txtProdDSPrices.requestFocus();
                     return;
                 }
             }
@@ -642,16 +726,13 @@ public class Products {
             if (!timeSpentStr.isEmpty()) {
                 timeSpent = Integer.parseInt(timeSpentStr);
                 if (timeSpent <= 0) {
-                    JOptionPane.showMessageDialog(frmProducts, 
-                        "Please enter a valid time spent (greater than 0).", 
-                        "Validation Error", JOptionPane.WARNING_MESSAGE);
+                    showWarning("Invalid Time", "Time spent must be greater than 0.");
+                    txtTimeSpent.requestFocus();
                     return;
                 }
             }
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(frmProducts, 
-                "Please enter valid numbers for Material Cost, Sell Price, and Time Spent.", 
-                "Input Error", JOptionPane.ERROR_MESSAGE);
+            showWarning("Invalid Number Format", "Please enter valid numbers in numeric fields.");
             return;
         }
 
@@ -772,6 +853,7 @@ public class Products {
         txtProdPattern.setText("");
         txtMaterialCost.setText("");
         txtProdDSPrices.setText("");
+        txtProdDSPrices.setEnabled(true); // Re-enable in case it was disabled
         txtTimeSpent.setText("");
         txtItemType.setText("");
         cboxProductStatusAdd.setSelectedIndex(0);

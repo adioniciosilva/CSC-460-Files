@@ -226,6 +226,8 @@ public class EditProduct {
         cboxProductStatusAdd.setBounds(214, 182, 179, 21);
         editProductPanel.add(cboxProductStatusAdd);
         
+        
+        
 		// A textfield that allow an edit to a material cost
         txtMaterialCost = new JTextField();
         txtMaterialCost.setToolTipText("Enter the material cost ");
@@ -306,6 +308,14 @@ public class EditProduct {
         
 
     }
+    
+    // Helper method to show consistent warning messages
+    private void showWarning(String title, String message) {
+        JOptionPane.showMessageDialog(frmEditProduct, 
+            message,
+            title,
+            JOptionPane.WARNING_MESSAGE);
+    }
 
     // Function that will set the item in a combobox based on a string value
     private void setComboBoxSelection(JComboBox<String> comboBox, String value) {
@@ -331,32 +341,103 @@ public class EditProduct {
             int quantity = (int) spinnerProductQuantity.getValue();
             String sellPriceStr = txtProdDSPrices.getText().trim();
             double sellPrice = 0.0;
-            int timeSpent = txtTimeSpent.getText().isEmpty() ? 0 : 
-                          Integer.parseInt(txtTimeSpent.getText().trim());
+//            int timeSpent = txtTimeSpent.getText().isEmpty() ? 0 : 
+//                          Integer.parseInt(txtTimeSpent.getText().trim());
 
             // Validate required fields
-            if (name.isEmpty() || type.isEmpty() || status.isEmpty() || category.isEmpty()) {
-                JOptionPane.showMessageDialog(frmEditProduct, 
-                    "Please fill in all required fields", 
-                    "Validation Error", JOptionPane.WARNING_MESSAGE);
-                return;
+            if (name.isEmpty()) {
+            	showWarning("Required Field", "Please enter a product name.");
+            	txtProdName.requestFocus();
+            	return;
             }
-
-            // Validate quilt pattern (only for quilts)
-            if (type.equalsIgnoreCase("quilt") && pattern.isEmpty()) {
-                JOptionPane.showMessageDialog(frmEditProduct, 
-                    "Quilt pattern is required for quilt items.", 
-                    "Validation Error", JOptionPane.WARNING_MESSAGE);
+            
+            if (type.isEmpty()) {
+            	showWarning("Required Field", "");
+            	txtItemType.requestFocus();
+            	return;
+            }
+            
+            if (status == null || status.isEmpty()) {
+            	showWarning("Required Field", "Please select a product status.");
+            	cboxProductStatusAdd.requestFocus();
+            }
+            
+            if (category == null || category.isEmpty()) {
+                showWarning("Required Field", "Please select a product category.");
+                cboxDonSelAdd.requestFocus();
                 return;
             }
             
-            // Validate coozie size (only for coozies)
-            if (type.equalsIgnoreCase("coozie") && (coozieSize == null || coozieSize.isEmpty())) {
-                JOptionPane.showMessageDialog(frmEditProduct, 
-                    "Coozie size is required for coozie items.", 
-                    "Validation Error", JOptionPane.WARNING_MESSAGE);
+         // Donation-specific validation
+            if ("Donate".equals(category) && !txtProdDSPrices.getText().trim().isEmpty()) {
+                showWarning("Invalid Entry", "Sell price should not be entered for donated items.");
+                txtProdDSPrices.setText("");
+                txtProdDSPrices.requestFocus();
                 return;
             }
+         
+            if ("Sell".equals(category)) {
+                if (sellPriceStr.isEmpty()) {
+                    showWarning("Field Required", "Please enter a sell price for items in sell category.");
+                    txtProdDSPrices.requestFocus();
+                    return;
+                }
+            }
+
+            // Validate quilt pattern (only for quilts)
+            if (type.equalsIgnoreCase("quilt")) {
+                if (pattern.isEmpty()) {
+                    showWarning("Required Field", "Please enter a quilt pattern for quilt items.");
+                    txtProdPattern.requestFocus();
+                    return;
+                }
+                // Ensure coozie size is not selected for quilts
+                if (!((String)cboxCoozieSize.getSelectedItem()).isEmpty()) {
+                    showWarning("Invalid Selection", "Coozie size should not be selected for quilt items.");
+                    cboxCoozieSize.setSelectedIndex(0);
+                    cboxCoozieSize.requestFocus();
+                    return;
+                }
+            } 
+            else if (type.equalsIgnoreCase("coozie")) {
+                if (((String)cboxCoozieSize.getSelectedItem()).isEmpty()) {
+                    showWarning("Required Field", "Please select a coozie size for coozie items.");
+                    cboxCoozieSize.requestFocus();
+                    return;
+                }
+                // Ensure quilt pattern is not entered for coozies
+                if (!pattern.isEmpty()) {
+                    showWarning("Invalid Entry", "Quilt pattern should not be entered for coozie items.");
+                    txtProdPattern.setText("");
+                    txtProdPattern.requestFocus();
+                    return;
+                }
+            } 
+            else {
+                // For other item types, ensure neither is entered
+                if (!pattern.isEmpty()) {
+                    showWarning("Invalid Entry", "Quilt pattern should only be entered for quilt items.");
+                    txtProdPattern.setText("");
+                    txtProdPattern.requestFocus();
+                    return;
+                }
+                if (!((String)cboxCoozieSize.getSelectedItem()).isEmpty()) {
+                    showWarning("Invalid Selection", "Coozie size should only be selected for coozie items.");
+                    cboxCoozieSize.setSelectedIndex(0);
+                    cboxCoozieSize.requestFocus();
+                    return;
+                }
+            }
+            String timeSpentText = txtTimeSpent.getText().trim();
+            if (timeSpentText.isEmpty()) {
+                showWarning("Required Field", "Please enter the amount of time spent.");
+                txtTimeSpent.requestFocus();
+                return;
+            }
+
+            int timeSpent = txtTimeSpent.getText().isEmpty() ? 0 : 
+                Integer.parseInt(txtTimeSpent.getText().trim()); // Safe to parse now
+            
 
             // Validate quantity for Sell/Donate categories
             if (("Sell".equals(category) || "Donate".equals(category))) {
