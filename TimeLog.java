@@ -117,7 +117,7 @@ public class TimeLog {
 		// Main screen for the application
 		frmTimeLog = new JFrame();
 		frmTimeLog.setTitle("Time Log");
-		frmTimeLog.setBounds(100, 100, 700, 700);
+		frmTimeLog.setBounds(100, 100, 700, 680);
 		frmTimeLog.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmTimeLog.getContentPane().setBackground(new Color(216, 203, 175));
 		frmTimeLog.getContentPane().setLayout(null);
@@ -141,7 +141,7 @@ public class TimeLog {
 		// Will use a table to display information to the user based on time
 		JScrollPane scrollPaneTime = new JScrollPane(tblTime);
 		scrollPaneTime.setForeground(Color.WHITE);
-		scrollPaneTime.setBounds(41, 180, 600, 321);
+		scrollPaneTime.setBounds(41, 180, 600, 403);
 		frmTimeLog.getContentPane().add(scrollPaneTime);
 		
 		// A textfield to input search for components from the time table

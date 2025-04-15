@@ -483,7 +483,8 @@ public class Financials {
         
         // A spinner for product quantity inputs
         spinnerQuantitySold = new JSpinner();
-        spinnerQuantitySold.setModel(new SpinnerNumberModel(1, 1, 1000, 1));
+        spinnerQuantitySold.setToolTipText("Enter the number of products that will be sold");
+        spinnerQuantitySold.setModel(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
         spinnerQuantitySold.setBounds(434, 107, 129, 20);
         calculatorPanel.add(spinnerQuantitySold);
 
@@ -502,6 +503,7 @@ public class Financials {
         
 		// A textfield that will take a profit margin input
         txtProfitMargin = new JTextField();
+        txtProfitMargin.setToolTipText("Enter the desired profit margin up to 99%");
         txtProfitMargin.setText("0"); 
         txtProfitMargin.setBounds(225, 107, 149, 19);
         calculatorPanel.add(txtProfitMargin);
@@ -509,12 +511,13 @@ public class Financials {
 
 		// A textfield that will take a material cost input 
         txtMaterialCost = new JTextField();
+        txtMaterialCost.setToolTipText("Enter the amount spent on material cost");
         txtMaterialCost.setColumns(10);
         txtMaterialCost.setBounds(39, 107, 143, 19);
         calculatorPanel.add(txtMaterialCost);
         
 		// A label that will display to the material cost
-        JLabel lblVolumeAdjust = new JLabel("Material Cost ($)");
+        JLabel lblVolumeAdjust = new JLabel("Volume Adjustment Factor");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
             caveatBrush = caveatBrush.deriveFont(Font.PLAIN, 18f);
@@ -528,6 +531,7 @@ public class Financials {
 
 		// A textfield that will take a volume adjusted input 
         txtVolumeAdjust = new JTextField();
+        txtVolumeAdjust.setToolTipText("Adjust the price based on the quantity sold");
         txtVolumeAdjust.setText("1.0"); // Default no adjustment
         txtVolumeAdjust.setColumns(10);
         txtVolumeAdjust.setBounds(620, 107, 112, 19);
@@ -587,13 +591,25 @@ public class Financials {
         
 		// A button to calculate product price based on the associated fields
         JButton btnCalculate = new JButton("Calculate");
-        btnCalculate.setBounds(39, 407, 107, 37);
-        calculatorPanel.add(btnCalculate);
         btnCalculate.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 calculatePrices();
             }
         });
+        btnCalculate.setBounds(39, 407, 107, 37);
+        calculatorPanel.add(btnCalculate);
+
+		// A button to clear product price based on the associated fields
+        JButton btnClearCalculate = new JButton("Clear");
+        btnClearCalculate.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		 clearCalculator();
+        	}
+        });
+        btnClearCalculate.setBounds(203, 407, 107, 37);
+        calculatorPanel.add(btnClearCalculate);
+        
+        
 
         // A button to print the screen as a png
         JButton btnPrintReport = new JButton("Print Report");
@@ -1004,6 +1020,31 @@ public class Financials {
             BigDecimal profitMargin = new BigDecimal(txtProfitMargin.getText()).divide(new BigDecimal(100), 4, RoundingMode.HALF_UP);
             int quantitySold = (Integer) spinnerQuantitySold.getValue();
             BigDecimal volumeAdjustFactor = new BigDecimal(txtVolumeAdjust.getText());
+            
+            // Validate Material Cost (must be positive)
+            materialCost = new BigDecimal(txtMaterialCost.getText());
+            if (materialCost.compareTo(BigDecimal.ZERO) <= 0) {
+                throw new IllegalArgumentException("Material cost must be greater than $0.00.");
+            }
+
+            // Validate Profit Margin (must be between 0% and 99%)
+            profitMargin = new BigDecimal(txtProfitMargin.getText());
+            if (profitMargin.compareTo(BigDecimal.ZERO) < 0 || profitMargin.compareTo(new BigDecimal(99)) > 0) {
+                throw new IllegalArgumentException("Profit margin must be between 0% and 99%.");
+            }
+            profitMargin = profitMargin.divide(new BigDecimal(100), 4, RoundingMode.HALF_UP);
+
+            // Validate Quantity Sold (must be ≥1)
+            quantitySold = (Integer) spinnerQuantitySold.getValue();
+            if (quantitySold < 1) {
+                throw new IllegalArgumentException("Quantity sold must be at least 1.");
+            }
+
+            // Validate Volume Adjustment Factor (must be >0)
+            volumeAdjustFactor = new BigDecimal(txtVolumeAdjust.getText());
+            if (volumeAdjustFactor.compareTo(BigDecimal.ZERO) <= 0) {
+                throw new IllegalArgumentException("Volume adjustment must be greater than 0.");
+            }
 
             // Calculate base recommended price (material cost / (1 - profit margin))
             BigDecimal basePrice = materialCost.divide(BigDecimal.ONE.subtract(profitMargin), 2, RoundingMode.HALF_UP);
@@ -1024,13 +1065,22 @@ public class Financials {
 
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(frmFinancials, 
-                "Please enter valid numbers in all fields", 
+                "Please enter valid numbers in all fields.", 
                 "Input Error", JOptionPane.ERROR_MESSAGE);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(frmFinancials, 
                 "An error occurred during calculation: " + ex.getMessage(), 
                 "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+    
+
+    // Function that will allow the user to clear all options in case to restart
+    private void clearCalculator() {
+    	txtMaterialCost.setText("");
+    	txtProfitMargin.setText("");
+    	spinnerQuantitySold.setValue(1);
+    	txtVolumeAdjust.setText("1.0");
     }
 		
     // Function to print the report and save it to a file 
