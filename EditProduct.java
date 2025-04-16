@@ -375,6 +375,14 @@ public class EditProduct {
                 txtProdDSPrices.requestFocus();
                 return;
             }
+            
+            
+            if ("Inventory".equals(category) && !txtProdDSPrices.getText().trim().isEmpty()) {
+                showWarning("Invalid Entry", "Sell price should not be entered for inventory items.");
+                txtProdDSPrices.setText("");
+                txtProdDSPrices.requestFocus();
+                return;
+            }
          
             if ("Sell".equals(category)) {
                 if (sellPriceStr.isEmpty()) {
@@ -385,7 +393,7 @@ public class EditProduct {
             }
 
             // Validate quilt pattern (only for quilts)
-            if (type.equalsIgnoreCase("quilt")) {
+            if (type.equalsIgnoreCase("Quilt")) {
                 if (pattern.isEmpty()) {
                     showWarning("Required Field", "Please enter a quilt pattern for quilt items.");
                     txtProdPattern.requestFocus();
@@ -399,7 +407,7 @@ public class EditProduct {
                     return;
                 }
             } 
-            else if (type.equalsIgnoreCase("coozie")) {
+            else if (type.toLowerCase().contains("coozie")) {
                 if (((String)cboxCoozieSize.getSelectedItem()).isEmpty()) {
                     showWarning("Required Field", "Please select a coozie size for coozie items.");
                     cboxCoozieSize.requestFocus();
@@ -412,6 +420,7 @@ public class EditProduct {
                     txtProdPattern.requestFocus();
                     return;
                 }
+                
             } 
             else {
                 // For other item types, ensure neither is entered
@@ -476,7 +485,8 @@ public class EditProduct {
                     return;
                 }
             }
-
+            
+            
             // Start transaction
             conn.setAutoCommit(false);
             
@@ -489,11 +499,11 @@ public class EditProduct {
                 try (PreparedStatement stmt = conn.prepareStatement(query)) {
                     stmt.setString(1, name);
                     stmt.setString(2, type);
-                    stmt.setString(3, type.equalsIgnoreCase("quilt") ? pattern : null);
+                    stmt.setString(3, type.toLowerCase().contains("quilt") ? pattern : null);
                     stmt.setString(4, status);
                     stmt.setString(5, category);
                     stmt.setDouble(6, materialCost);
-                    stmt.setString(7, type.equalsIgnoreCase("coozie") ? coozieSize : null);
+                    stmt.setString(7, type.toLowerCase().contains("coozie") ? coozieSize : null);
                     stmt.setInt(8, currentProductId);
                     stmt.executeUpdate();
                 }

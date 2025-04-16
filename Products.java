@@ -423,6 +423,7 @@ public class Products {
             public void actionPerformed(ActionEvent e) {
                 String input = txtProductDelId.getText().trim();
                 
+               
                 // Validate input before parsing
                 if (input.isEmpty()) {
                     JOptionPane.showMessageDialog(frmProducts, 
@@ -619,37 +620,36 @@ public class Products {
             txtMaterialCost.requestFocus();
             return;
         }
-        // Type-specific validations
-        if (itemType.equalsIgnoreCase("quilt")) {
+        
+     // Type-specific validations
+        if (itemType.toLowerCase().contains("quilt")) {
+            // Quilt-specific validation
             if (prodPattern.isEmpty()) {
                 showWarning("Required Field", "Please enter a quilt pattern for quilt items.");
                 txtProdPattern.requestFocus();
                 return;
             }
-            // Ensure coozie size is not selected for quilts
             if (!((String)cboxCoozieSize.getSelectedItem()).isEmpty()) {
                 showWarning("Invalid Selection", "Coozie size should not be selected for quilt items.");
                 cboxCoozieSize.setSelectedIndex(0);
                 cboxCoozieSize.requestFocus();
                 return;
             }
-        } 
-        else if (itemType.equalsIgnoreCase("coozie")) {
+        } else if (itemType.toLowerCase().contains("coozie")) {
+            // Coozie-specific validation
             if (((String)cboxCoozieSize.getSelectedItem()).isEmpty()) {
                 showWarning("Required Field", "Please select a coozie size for coozie items.");
                 cboxCoozieSize.requestFocus();
                 return;
             }
-            // Ensure quilt pattern is not entered for coozies
             if (!prodPattern.isEmpty()) {
                 showWarning("Invalid Entry", "Quilt pattern should not be entered for coozie items.");
                 txtProdPattern.setText("");
                 txtProdPattern.requestFocus();
                 return;
             }
-        } 
-        else {
-            // For other item types, ensure neither is entered
+        } else {
+            // Other item types validation
             if (!prodPattern.isEmpty()) {
                 showWarning("Invalid Entry", "Quilt pattern should only be entered for quilt items.");
                 txtProdPattern.setText("");
@@ -671,6 +671,15 @@ public class Products {
             txtProdDSPrices.requestFocus();
             return;
         }
+        
+
+        if ("Inventory".equals(category) && !txtProdDSPrices.getText().trim().isEmpty()) {
+            showWarning("Invalid Entry", "Sell price should not be entered for inventory items.");
+            txtProdDSPrices.setText("");
+            txtProdDSPrices.requestFocus();
+            return;
+        }
+
 
         if ("Sell".equals(category)) {
             if (sellPriceStr.isEmpty()) {
@@ -751,10 +760,10 @@ public class Products {
                 itemStmt.setString(1, prodName);
                 itemStmt.setString(2, itemType);
                 itemStmt.setString(3, productStatus);
-                itemStmt.setString(4, itemType.equalsIgnoreCase("quilt") ? prodPattern : null);
+                itemStmt.setString(4, itemType.toLowerCase().contains("quilt") ? prodPattern : null);
                 itemStmt.setString(5, category);
                 itemStmt.setString(6, LocalDate.now().format(dbFormatter));
-                itemStmt.setString(7, itemType.equalsIgnoreCase("coozie") ? coozieSize : null);
+                itemStmt.setString(7, itemType.toLowerCase().contains("coozie") ? coozieSize : null);
                 itemStmt.setDouble(8, materialCost);
                 
                 int affectedRows = itemStmt.executeUpdate();
@@ -874,7 +883,8 @@ public class Products {
 
             try {
                 // First check if the product exists
-                String checkQuery = "SELECT 1 FROM items WHERE ITEM_ID = ?";
+                String productName = "";
+                String checkQuery = "SELECT ITEM_NM FROM items WHERE ITEM_ID = ?";
                 try (PreparedStatement pst = conn.prepareStatement(checkQuery)) {
                     pst.setInt(1, productDelete);
                     
@@ -884,7 +894,22 @@ public class Products {
                             "Search Result", JOptionPane.INFORMATION_MESSAGE);
                         return;
                     }
+                    productName = rs.getString("ITEM_NM");
                 }
+                
+                // Show confirmation dialog
+                int confirm = JOptionPane.showConfirmDialog(
+                    frmProducts, 
+                    "Are you sure you want to permanently delete Product #" + productDelete + 
+                    " (" + productName + ") and all its associated records?",
+                    "Confirm Deletion",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+                
+                if (confirm != JOptionPane.YES_OPTION) {
+                    return; // User canceled the deletion
+                }
+
 
                 // Disable auto-commit to handle as a transaction
                 conn.setAutoCommit(false);

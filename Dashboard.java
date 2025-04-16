@@ -7,7 +7,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import javax.swing.table.DefaultTableModel;
 // Used for the table sorting
-// Used for the table sorting
 import javax.swing.*;
 import java.awt.Color;
 import java.awt.Font;
