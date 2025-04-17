@@ -1,3 +1,4 @@
+// Packages to import for the java project
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -11,7 +12,6 @@ import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableRowSorter;
 import java.awt.Color;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
@@ -24,7 +24,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.awt.event.ActionEvent;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -37,6 +36,8 @@ import java.time.format.DateTimeParseException;
 import javax.swing.JTabbedPane;
 import javax.swing.JSpinner;
 import java.math.RoundingMode;
+import javax.swing.table.TableRowSorter; // Used for the table sorting
+import java.util.Collections; // Used for the table sorting
 
 public class Financials {
 
@@ -76,18 +77,19 @@ public class Financials {
         });
     }
 
-    /**
-     * Constructor for the Financials class
-     * Initializes the database connection and UI component
-     */
+	/**
+	 * Create the application.
+	 */
+    
     public Financials() {
+		// Will ensure a connection to a SQLite database
         try {
 	    	// Load JDBC driver and establish database connection
             Class.forName("org.sqlite.JDBC");
             String dbPath = new File("database/mamaspiddlins.sqlite").getAbsolutePath();
             conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
             
-	        // In case of unsuccessful connection to initialize UI components
+	        // Prints a success if connection works or error message if not
             if (conn != null) {
                 System.out.println("Connection successful");
                 initialize();
@@ -96,6 +98,8 @@ public class Financials {
                     "Error", JOptionPane.ERROR_MESSAGE);
                 System.exit(1);
             }
+            
+    	// Displays the error message to the user 
         } catch (SQLException | ClassNotFoundException e) {
             JOptionPane.showMessageDialog(null, "Database error: " + e.getMessage(), 
                 "Error", JOptionPane.ERROR_MESSAGE);
@@ -109,6 +113,7 @@ public class Financials {
      * Sets up all UI components such as tabs, tables, and buttons
      * @wbp.parser.entryPoint
      */
+    
     private void initialize() {
     
         // The beginning setup for the Financials Page
@@ -154,7 +159,7 @@ public class Financials {
         tblDonations.setModel(new DefaultTableModel(
             new Object[][] {},
             new String[] {"Donation ID", "Product ID", "Product Name", "Product Type", 
-                         "Donation Date", "Donation Quantity"}
+                         "Donation Date", "Donation Quantity", "Material Cost"}
         ));
         
         // Disable editing in the table
@@ -185,7 +190,7 @@ public class Financials {
         tblInventory.setModel(new DefaultTableModel(
             new Object[][] {},
             new String[] {"Inventory ID", "Product Name", "Product Type", 
-                         "Inventory Date"}
+                         "Inventory Date", "Material Cost"}
         ));
         
         // Disable editing in the table
@@ -233,23 +238,9 @@ public class Financials {
         JPanel calculatorPanel = new JPanel();
         mainPane.addTab("Calculator", null, calculatorPanel, null);
         calculatorPanel.setLayout(null);
-        
-
-        
-		// The label that will display the title of the page
-		/* NOTE Jaiven Comment:
-		 * Title of the page: Financial
-		 * 
-		 * CHANGES:
-		 * Removed the gray panel that was around the title of the page and moved the title to the top of the page with a custom font
-		 * 
-		 * PROBLEM: 
-		 * The font size cannot increase because the label will be cut off
-		 * 
-		 * SOLUTION:
-		 * Increase the label width and increase the font size
-		 */
+     
 		// New code for the title of the page:
+        // by: Jaiven Harris 
 		JLabel lblFinancials = new JLabel("Financials");
 		try {
 		    Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
@@ -281,6 +272,7 @@ public class Financials {
         
         
         // The label that will display the total revenue price
+        // by: Jaiven Harris 
         lblDisplayRevenue = new JLabel("$0.00");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
@@ -294,6 +286,7 @@ public class Financials {
         financialsPanel.add(lblDisplayRevenue);
         
         // The label that will display the total profit price
+        // by: Jaiven Harris 
         lblDisplayProfit = new JLabel("$0.00");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
@@ -308,6 +301,7 @@ public class Financials {
 
         
 		// The label that will display the total profit		
+        // by: Jaiven Harris 
         JLabel lblTotalProfit = new JLabel("Total Profit");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
@@ -321,7 +315,8 @@ public class Financials {
         financialsPanel.add(lblTotalProfit);	
         
         
-		// The label that will display the total revenue		
+		// The label that will display the total revenue	
+        // by: Jaiven Harris 
         JLabel lblTotalRevenue = new JLabel("Total Revenue");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
@@ -357,7 +352,8 @@ public class Financials {
         financialsPanel.add(btnSearch);
         btnSearch.setFont(new Font("Dialog", Font.BOLD, 12));
         
-		// Will allow the table to reset/refresh to see all data
+        // The button to allow the user to reset the table content
+        // by: Jaiven Harris 
         JButton btnReturn = new JButton("Reset");
         btnReturn.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
@@ -395,11 +391,9 @@ public class Financials {
         btnSearchDonations.setFont(new Font("Dialog", Font.BOLD, 12));
         donationPanel.add(btnSearchDonations);
         
-		/*NOTE: Jaiven Comment:
-		 * 
-		 * CHANGES: Added a return button to reset the table content
-		 * 
-		 */
+        
+        // The button to allow the user to reset the table content
+        // by: Jaiven Harris 
         JButton btnReturnDon = new JButton("Reset");
         btnReturnDon.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
@@ -412,7 +406,7 @@ public class Financials {
         
         
 		// *******************************************************************************************************	        
-        // Donation Components
+        // Inventory Components
         
 		// The table that that will display the information to the user 
         JScrollPane scrollPaneInventory = new JScrollPane(tblInventory);
@@ -420,7 +414,8 @@ public class Financials {
         scrollPaneInventory.setBounds(29, 76, 856, 335);
         inventoryPanel.add(scrollPaneInventory);
         
-		// Will allow the table to reset/refresh to see all data
+        // The button to allow the user to reset the table content
+        // by: Jaiven Harris 
         JButton btnReturnInv = new JButton("Reset");
         btnReturnInv.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
@@ -454,6 +449,7 @@ public class Financials {
         // Calculator Components
         
         // A label that will display to the user material cost
+        // by: Jaiven Harris 
         JLabel lblMaterialCost = new JLabel("Material Cost ($)");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
@@ -468,6 +464,7 @@ public class Financials {
         
 
         // A label that will display the profit margin to the user
+        // by: Jaiven Harris 
         JLabel lblProfitMargin = new JLabel("Time Spent in Hours");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
@@ -488,6 +485,7 @@ public class Financials {
         calculatorPanel.add(spinnerQuantitySold);
 
         // A label that display to the user quantity sold
+        // by: Jaiven Harris 
         JLabel lblQuantitySold = new JLabel("Quantity Sold");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
@@ -508,6 +506,7 @@ public class Financials {
         txtMaterialCost.setBounds(225, 107, 143, 19);
         calculatorPanel.add(txtMaterialCost);
        
+		// A textfield that will take the hours input 
         txtHoursSpent = new JTextField();
         txtHoursSpent.setToolTipText("Enter the amount spent on material cost");
         txtHoursSpent.setColumns(10);
@@ -516,6 +515,7 @@ public class Financials {
 
         
 		// A label that will display to the user price adjusted
+        // by: Jaiven Harris 
         lblDisplayAdjusted = new JLabel("$0.00");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
@@ -529,6 +529,7 @@ public class Financials {
         calculatorPanel.add(lblDisplayAdjusted);
         
 		// A label that will display to the user recommended price
+        // by: Jaiven Harris 
         lblDisplayRecommended = new JLabel("$0.00");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
@@ -542,6 +543,7 @@ public class Financials {
         calculatorPanel.add(lblDisplayRecommended);
         
 		// A label that will display to the base recommended price text
+        // by: Jaiven Harris 
         JLabel lblRecommendPrice = new JLabel("Base Recommended Price");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
@@ -555,6 +557,7 @@ public class Financials {
         calculatorPanel.add(lblRecommendPrice);
         
 		// A label that will display to the user adjusted price text
+        // by: Jaiven Harris 
         JLabel lblAdjustPrice = new JLabel("Adjusted Price");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
@@ -586,8 +589,6 @@ public class Financials {
         });
         btnClearCalculate.setBounds(203, 407, 107, 37);
         calculatorPanel.add(btnClearCalculate);
-        
-        
 
         // A button to print the screen as a png
         JButton btnPrintReport = new JButton("Print Report");
@@ -607,6 +608,7 @@ public class Financials {
     
  // Function to allow the user to search for finances by item name or item type
     private void searchFinancials(String searchTerm) {
+	    // Checks if the input is empty, and displays message to user
         if (searchTerm == null || searchTerm.trim().isEmpty()) {
             JOptionPane.showMessageDialog(frmFinancials, "Search bar cannot be empty.", 
                                         "Validation Error", JOptionPane.WARNING_MESSAGE);
@@ -614,15 +616,18 @@ public class Financials {
             return;
         }
         
-        // A query to search financial data
+        // Uses a query to search financial data
         String query = "SELECT i.ITEM_ID, i.ITEM_NM, i.MATERIAL_COST_AM, s.SALE_DT, s.QUANTITY_SOLD_NO, s.SALE_PRICE_AM " +
                       "FROM items i JOIN sales s ON i.ITEM_ID = s.ITEM_ID " +
                       "WHERE i.CATEGORY_CD = 'Sell' AND (i.ITEM_NM LIKE ? OR i.ITEM_TYPE_DE LIKE ?)";
-
+        
+        // Will execute the query and clear the existing rows from the associated tables
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
-           // Set search parameters
+            // Allows when searching to match with anything within parameters
         	stmt.setString(1, "%" + searchTerm + "%");
             stmt.setString(2, "%" + searchTerm + "%");
+            
+            // Will execute the query and clear the existing rows from the associated table
             ResultSet rs = stmt.executeQuery();
             DefaultTableModel model = (DefaultTableModel) tblFinacials.getModel();
             model.setRowCount(0);
@@ -630,19 +635,21 @@ public class Financials {
             BigDecimal totalRevenue = BigDecimal.ZERO;
             BigDecimal totalMaterialCost = BigDecimal.ZERO;
             
-            // Process results
+            // Will go through the results and add the items info to the table to be displayed
             while (rs.next()) {
                 BigDecimal materialCost = rs.getBigDecimal("MATERIAL_COST_AM");
                 BigDecimal salePrice = rs.getBigDecimal("SALE_PRICE_AM");
                 
-                // Format dates
+                // Format the dates
                 String saleDateStr = rs.getString("SALE_DT");
                 String displayDate;
                 try {
+                    // First, try ISO format
                     LocalDate saleDate = LocalDate.parse(saleDateStr, dbFormatter);
                     displayDate = saleDate.format(displayFormatter);
                 } catch (DateTimeParseException e1) {
                     try {
+                        // If that fails, trys timestamp format
                         if (saleDateStr.matches("\\d+")) {
                             long timestamp = Long.parseLong(saleDateStr);
                             if (saleDateStr.length() > 10) timestamp /= 1000;
@@ -652,7 +659,7 @@ public class Financials {
                         } else {
                             displayDate = "Invalid Date";
                         }
-                    } catch (NumberFormatException e2) {
+                    } catch (NumberFormatException e) {
                         displayDate = "Invalid Date";
                     }
                 }
@@ -665,7 +672,7 @@ public class Financials {
                 totalRevenue = totalRevenue.add(salePrice);
                 totalMaterialCost = totalMaterialCost.add(materialCost); // No quantity multiplier
 
-                // Add row to table 
+                // Add row to the associated table
                 model.addRow(new Object[]{
                     rs.getInt("ITEM_ID"),
                     rs.getString("ITEM_NM"),
@@ -681,6 +688,7 @@ public class Financials {
             lblDisplayRevenue.setText(String.format("$%.2f", totalRevenue));
             lblDisplayProfit.setText(String.format("$%.2f", totalProfit));
 
+	    // If error with the database, then a message will display
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(frmFinancials, "Error searching database: " + ex.getMessage(),
                                         "Error", JOptionPane.ERROR_MESSAGE);
@@ -690,11 +698,16 @@ public class Financials {
     
     // Function that will update donation dates within the database
     private void updateDonationDate(int donationId, LocalDate correctDate) {
+    	// A query that updates only specified items for donations
         String updateQuery = "UPDATE donations SET DONATION_DT = ? WHERE DONATION_ID = ?";
+        
+		// Will prepare SQL statement to safely and ensure the preparedStatement is closed when done
         try (PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
             stmt.setString(1, correctDate.format(dbFormatter));
             stmt.setInt(2, donationId);
             stmt.executeUpdate();
+        
+        // If error with the database, then a message will display
         } catch (SQLException e) {
             System.err.println("Error updating donation date for donation " + donationId);
             e.printStackTrace();
@@ -703,17 +716,22 @@ public class Financials {
     
     // Function that will display and load the financial data based on sales to the table
     private void viewFinancials() {
+    	// Uses a query to join product and sales table based on sells items 
         String query = "SELECT i.ITEM_ID, i.ITEM_NM, i.MATERIAL_COST_AM, s.SALE_DT, s.QUANTITY_SOLD_NO, s.SALE_PRICE_AM " +
                       "FROM items i JOIN sales s ON i.ITEM_ID = s.ITEM_ID " +
                       "WHERE i.CATEGORY_CD = 'Sell'";
-
+        
+		// Will prepare SQL statement to safely and ensure the preparedStatement is closed when done
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            ResultSet rs = stmt.executeQuery();
+            
+            // Will execute the query and clear the existing rows from the associated table
+        	ResultSet rs = stmt.executeQuery();
             DefaultTableModel model = (DefaultTableModel) tblFinacials.getModel();
             model.setRowCount(0);
 
+            // Will be used for tracking running totals for revenue and costs
             BigDecimal totalRevenue = BigDecimal.ZERO;
-            BigDecimal totalMaterialCost = BigDecimal.ZERO; // Sum of material costs (no quantity)
+            BigDecimal totalMaterialCost = BigDecimal.ZERO; 
 
             while (rs.next()) {
                 BigDecimal materialCost = rs.getBigDecimal("MATERIAL_COST_AM");
@@ -723,12 +741,13 @@ public class Financials {
                 String saleDateStr = rs.getString("SALE_DT");
                 String displayDate;
                 try {
-                    // First try ISO format
+                    // First, try ISO format
                     LocalDate saleDate = LocalDate.parse(saleDateStr, dbFormatter);
                     displayDate = saleDate.format(displayFormatter);
+                    
                 } catch (DateTimeParseException e1) {
                     try {
-                        // If that fails, try timestamp format
+                        // If that fails, trys timestamp format
                         if (saleDateStr.matches("\\d+")) {
                             long timestamp = Long.parseLong(saleDateStr);
                             if (saleDateStr.length() > 10) timestamp /= 1000;
@@ -748,42 +767,50 @@ public class Financials {
                 String formattedMaterialCost = String.format("%.2f", materialCost);
                 String formattedSalePrice = String.format("%.2f", salePrice);
                 		
-                // Revenue: Sum of sale prices (no quantity multiplier)
+                // Revenue: Sum of sale prices
                 totalRevenue = totalRevenue.add(salePrice);
 
-                // Material Cost: Sum of material costs (no quantity multiplier)
+                // Material Cost: Sum of material costs 
                 totalMaterialCost = totalMaterialCost.add(materialCost);
 
-                // Add row to table
+                // Add row to the associated table
                 model.addRow(new Object[]{
                     rs.getInt("ITEM_ID"),
                     rs.getString("ITEM_NM"),
                     formattedMaterialCost,
-                    displayDate, // Directly display date (formatting omitted for brevity)
+                    displayDate, 
                     quantity,
                     formattedSalePrice      
                 });
             }
 
-            // Profit = Total Revenue - Total Material Cost (no quantity multiplier)
+            // Profit = Total Revenue - Total Material Cost 
             BigDecimal totalProfit = totalRevenue.subtract(totalMaterialCost);
 
-            // Update labels
+            // Will update the associated labels
             lblDisplayRevenue.setText(String.format("$%.2f", totalRevenue));
             lblDisplayProfit.setText(String.format("$%.2f", totalProfit));
 
+	   	// If error with the database, then a message will display
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(frmFinancials, "Error loading financial data: " + ex.getMessage(),
                                         "Error", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
         }
     }
+    
+    // Function that will update sales date within the database
     private void updateSaleDate(int itemId, LocalDate correctDate) {
+    	// A query that updates only specified items for sales
         String updateQuery = "UPDATE sales SET SALE_DT = ? WHERE ITEM_ID = ?";
+        
+		// Will prepare SQL statement to safely and ensure the preparedStatement is closed when done
         try (PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
             stmt.setString(1, correctDate.format(dbFormatter));
             stmt.setInt(2, itemId);
             stmt.executeUpdate();
+         
+   	    // If error with the database, then a message will display
         } catch (SQLException e) {
             System.err.println("Error updating sale date for item " + itemId);
             e.printStackTrace();
@@ -792,6 +819,7 @@ public class Financials {
     
  // Function to allow the user to search for donations by item name or item type
     private void searchDonations(String searchTerm) {
+	    // Checks if the input is empty, and displays message to user
         if (searchTerm == null || searchTerm.trim().isEmpty()) {
             JOptionPane.showMessageDialog(frmFinancials, "Search bar cannot be empty.", 
                                         "Validation Error", JOptionPane.WARNING_MESSAGE);
@@ -799,14 +827,18 @@ public class Financials {
             return;
         }
         
-        String query = "SELECT d.DONATION_ID, d.ITEM_ID, i.ITEM_NM, i.ITEM_TYPE_DE, d.DONATION_DT, d.QUANTITY_DONATED_NO " +
-                     "FROM donations d JOIN items i ON d.ITEM_ID = i.ITEM_ID " +
-                     "WHERE i.CATEGORY_CD = 'Donate' AND (i.ITEM_NM LIKE ? OR i.ITEM_TYPE_DE LIKE ?)";
+        // Use a query to join donations with product info filtered by donation items
+        String query = "SELECT d.DONATION_ID, d.ITEM_ID, i.ITEM_NM, i.ITEM_TYPE_DE, " +
+                "d.DONATION_DT, d.QUANTITY_DONATED_NO, i.MATERIAL_COST_AM " +
+                "FROM donations d JOIN items i ON d.ITEM_ID = i.ITEM_ID " +
+                "WHERE i.CATEGORY_CD = 'Donate' AND (i.ITEM_NM LIKE ? OR i.ITEM_TYPE_DE LIKE ?)";
         
+		// Will prepare SQL statement to safely and ensure the preparedStatement is closed when done
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, "%" + searchTerm + "%");
             stmt.setString(2, "%" + searchTerm + "%");
             
+            // Will execute the query and clear the existing rows from the associated table
             ResultSet rs = stmt.executeQuery();
             DefaultTableModel model = (DefaultTableModel) tblDonations.getModel();
             model.setRowCount(0);
@@ -814,15 +846,18 @@ public class Financials {
             DateTimeFormatter dbFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
             DateTimeFormatter displayFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // Updated format
 
+            // Will go through the results and add the donation info to the table to be displayed
             while (rs.next()) {
                 String dateStr = rs.getString("DONATION_DT");
                 String displayDate;
                 
                 try {
+                    // First, try ISO format
                     LocalDate date = LocalDate.parse(dateStr, dbFormatter);
                     displayDate = date.format(displayFormatter);
                 } catch (DateTimeParseException e1) {
                     try {
+                        // If that fails, trys timestamp format
                         if (dateStr.matches("\\d+")) {
                             long timestamp = Long.parseLong(dateStr);
                             if (dateStr.length() > 10) timestamp /= 1000;
@@ -837,22 +872,29 @@ public class Financials {
                     }
                 }
                 
+                // Format material cost with 2 decimal places
+                String formattedMaterialCost = String.format("%.2f", rs.getDouble("MATERIAL_COST_AM"));
+
+                // Add row to the associated table
                 model.addRow(new Object[] {
                     rs.getInt("DONATION_ID"),
                     rs.getInt("ITEM_ID"),
                     rs.getString("ITEM_NM"),
                     rs.getString("ITEM_TYPE_DE"),
                     displayDate,
-                    rs.getInt("QUANTITY_DONATED_NO")
+                    rs.getInt("QUANTITY_DONATED_NO"),
+                    formattedMaterialCost
                 });
             }
 
+            // Will provide user friendly feedback
             if (model.getRowCount() == 0) {
                 JOptionPane.showMessageDialog(frmFinancials, "No donations found.", 
                                             "Search Results", JOptionPane.INFORMATION_MESSAGE);
                 viewDonations();
             }
 
+	    // If error with the database, then a message will display
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(frmFinancials, "Error searching donations.", 
                                         "Error", JOptionPane.ERROR_MESSAGE);
@@ -863,29 +905,34 @@ public class Financials {
 
     // Function that will display and load the donation data in the table
     private void viewDonations() {
-        String query = "SELECT d.DONATION_ID, d.ITEM_ID, i.ITEM_NM, i.ITEM_TYPE_DE, d.DONATION_DT, d.QUANTITY_DONATED_NO " +
-                       "FROM donations d JOIN items i ON d.ITEM_ID = i.ITEM_ID " +
-                       "WHERE i.CATEGORY_CD = 'Donate'";
+        String query = "SELECT d.DONATION_ID, d.ITEM_ID, i.ITEM_NM, i.ITEM_TYPE_DE, " +
+                "d.DONATION_DT, d.QUANTITY_DONATED_NO, i.MATERIAL_COST_AM " +
+                "FROM donations d JOIN items i ON d.ITEM_ID = i.ITEM_ID " +
+                "WHERE i.CATEGORY_CD = 'Donate'";
         
+		// Will prepare SQL statement to safely and ensure the preparedStatement is closed when done
         try(PreparedStatement stmt = conn.prepareStatement(query)){
-            ResultSet rs = stmt.executeQuery();
             
+            // Will execute the query and clear the existing rows from the associated table
+        	ResultSet rs = stmt.executeQuery();
             DefaultTableModel model = (DefaultTableModel) tblDonations.getModel();
             model.setRowCount(0); 
+            
             DateTimeFormatter dbFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
             DateTimeFormatter displayFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+            
             while (rs.next()) {
                 String dateStr = rs.getString("DONATION_DT");
                 String displayDate;
                 
                 try {
-                    // First try to parse as ISO date (YYYY-MM-DD)
+                    // First, try ISO format
                     LocalDate date = LocalDate.parse(dateStr, dbFormatter);
                     displayDate = date.format(displayFormatter);
                 } catch (DateTimeParseException e1) {
                     try {
-                        // If that fails, try to parse as timestamp (for existing malformed data)
+                        // If that fails, trys timestamp format
                         if (dateStr.matches("\\d+")) {
                             long timestamp = Long.parseLong(dateStr);
                             if (dateStr.length() > 10) timestamp /= 1000;
@@ -900,15 +947,23 @@ public class Financials {
                     }
                 }
                 
+                // Format the material cost with 2 decimal places
+                String formattedMaterialCost = String.format("%.2f", rs.getDouble("MATERIAL_COST_AM"));
+                
+                
+                // Add row to the associated table
                 model.addRow(new Object[] {
                     rs.getInt("DONATION_ID"),
                     rs.getInt("ITEM_ID"),
                     rs.getString("ITEM_NM"),
                     rs.getString("ITEM_TYPE_DE"),
                     displayDate,
-                    rs.getInt("QUANTITY_DONATED_NO")
+                    rs.getInt("QUANTITY_DONATED_NO"),
+                    formattedMaterialCost
                 });
             }
+        
+	    // If error with the database, then a message will display
         } catch(SQLException ex) {
             JOptionPane.showMessageDialog(frmFinancials, "Error loading donations: " + ex.getMessage(), 
                                         "Database Error", JOptionPane.ERROR_MESSAGE);
@@ -918,35 +973,42 @@ public class Financials {
     
     // Function that will search inventory items with only product name or type
     private void searchInventory(String searchTerm) {
+	    // Checks if the input is empty, and displays message to user
     	if(searchTerm == null || searchTerm.trim().isEmpty()) {
 	        JOptionPane.showMessageDialog(frmFinancials, "Search bar cannot be empty. Please enter a valid value.", "Validation Error", JOptionPane.WARNING_MESSAGE);
 	        return;
     	}
     	
 	    try {
-	        // A query to search in both item name and item type columns
+	        // A query to search in both item name and item type columns based on inventory
 	    	String query = "SELECT * FROM items WHERE (ITEM_NM LIKE ? OR ITEM_TYPE_DE LIKE ?) AND CATEGORY_CD = 'Inventory'";
 	    	
+			// Will prepare SQL statement to safely and ensure the preparedStatement is closed when done
 	        try (PreparedStatement stmt = conn.prepareStatement(query)) {
-	            // Bind parameters for both search columns
+	            // Allows when searching to match with anything within parameters
 	            stmt.setString(1, "%" + searchTerm + "%");
 	            stmt.setString(2, "%" + searchTerm + "%");
-
+	            
+	            // Will execute the query and clear the existing rows from the associated table
 	            ResultSet rs = stmt.executeQuery();
 	            DefaultTableModel model = (DefaultTableModel) tblInventory.getModel();
-
-	            // Clear previous search results from the table
 	            model.setRowCount(0);
 
 	            boolean found = false;
 
+	            // Will go through the results and add the item info to the table to be displayed
 	            while (rs.next()) {
 	                found = true;
+	                // Format material cost for display
+	                String formattedMaterialCost = String.format("%.2f", rs.getDouble("MATERIAL_COST_AM"));
+	                
+	                // Add row to the associated table
 	                model.addRow(new Object[]{
 	    				rs.getInt("ITEM_ID"),
 	    				rs.getString("ITEM_NM"),
 	    				rs.getString("ITEM_TYPE_DE"),
 	    				rs.getString("DATE_CREATED_DT"),
+	    				formattedMaterialCost  
 	                });
 	            }
 
@@ -955,13 +1017,15 @@ public class Financials {
 	                JOptionPane.showMessageDialog(frmFinancials, "No results found for \"" + searchTerm + "\"", "Search Result", JOptionPane.INFORMATION_MESSAGE);
 	            }
 
+		    // If error with the database, then a message will display   
 	        } catch (SQLException ex) {
-	            JOptionPane.showMessageDialog(frmFinancials, "Error fetching data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-	            ex.printStackTrace();
+	            JOptionPane.showMessageDialog(frmFinancials, "Database error while searching: " + ex.getMessage(), 
+	                    "Error", JOptionPane.ERROR_MESSAGE);
+	                ex.printStackTrace();
 	        }
-
+	    
+	    // General error for any other exception
 	    } catch (Exception e) {
-	        // General error for any other exception
 	        JOptionPane.showMessageDialog(frmFinancials, "An error occurred: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	        e.printStackTrace();
 	    }
@@ -969,76 +1033,95 @@ public class Financials {
     
     // Function that will load and display the inventory items in the table
     private void viewInventory(){
+    	// Uses a query to select all from items that are inventory
     	String query = "SELECT * FROM items WHERE CATEGORY_CD = 'Inventory'";
-		try(PreparedStatement stmt = conn.prepareStatement(query)){
+		
+		// Will prepare SQL statement to safely and ensure the preparedStatement is closed when done
+    	try(PreparedStatement stmt = conn.prepareStatement(query)){
 	        ResultSet rs = stmt.executeQuery();
 	        
+            // Will execute the query and clear the existing rows from the associated table
 			DefaultTableModel model = (DefaultTableModel) tblInventory.getModel();
 			model.setRowCount(0);
 			
+            // Will go through the results and add the item info to the table to be displayed
 			while (rs.next()) {
+	            // Format material cost with 2 decimal places
+	            String formattedMaterialCost = String.format("%.2f", rs.getDouble("MATERIAL_COST_AM"));
+				
+                // Add row to the associated table
 				model.addRow(new Object[] {
 					rs.getInt("ITEM_ID"),
 					rs.getString("ITEM_NM"),
 					rs.getString("ITEM_TYPE_DE"),
 					rs.getString("DATE_CREATED_DT"),
+					formattedMaterialCost
 				});
 			}
-
+	    
+		// If error with the database, then a message will display
 		} catch(SQLException ex) {
-			ex.printStackTrace();
-		}
+	        JOptionPane.showMessageDialog(frmFinancials, 
+	                "Error loading inventory: " + ex.getMessage(),
+	                "Database Error", 
+	                JOptionPane.ERROR_MESSAGE);
+	            ex.printStackTrace();		}
 	}
 	
  // Function that will calculate recommended prices based on input values
     private void calculatePrices() {
         try {
-            // Get input values
+            // Will get the input values
             BigDecimal materialCost = new BigDecimal(txtMaterialCost.getText());
             int quantity = (Integer) spinnerQuantitySold.getValue();
             BigDecimal hoursSpent = new BigDecimal(txtHoursSpent.getText());
             BigDecimal hourlyRate = new BigDecimal("15.00"); // Default hourly rate $15/hr
             
-            // Validate Material Cost (must be positive)
+            // Will validate the material cost such as a value greater than 0
             if (materialCost.compareTo(BigDecimal.ZERO) <= 0) {
                 throw new IllegalArgumentException("Material cost must be greater than $0.00");
             }
 
-            // Validate Quantity (must be ≥1)
+            // Will validate the quantity to ensure it must be larger than 1
             if (quantity < 1) {
                 throw new IllegalArgumentException("Quantity must be at least 1");
             }
 
-            // Validate Hours Spent (must be ≥0)
+            // Will validate the hours spent to ensure it will not be a negative number
             if (hoursSpent.compareTo(BigDecimal.ZERO) < 0) {
                 throw new IllegalArgumentException("Hours spent cannot be negative");
             }
 
-            // Calculate labor cost (hours * hourly rate)
+            // Will calculate labor cost based on hours * hourly rate
             BigDecimal laborCost = hoursSpent.multiply(hourlyRate);
 
-            // Calculate total cost (materials + labor)
+            // Will calculate total cost based on materials + labor
             BigDecimal totalCost = materialCost.add(laborCost);
 
-            // Calculate price per unit (total cost / quantity)
+            // Will calculate price per unit based on total cost / quantity
             BigDecimal pricePerUnit = totalCost.divide(
                 new BigDecimal(quantity), 
                 2, 
                 RoundingMode.HALF_UP);
 
-
-            // Display results
+     
+            // Will display the final results to a label
             lblDisplayRecommended.setText(String.format("Total Cost: $%.2f", totalCost));
             lblDisplayAdjusted.setText(String.format("$%.2f per unit", pricePerUnit));
-
+            
+        // Will catch cases when invalid number is entered displaying a message along with it
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(frmFinancials, 
                 "Please enter valid numbers in all fields", 
                 "Input Error", JOptionPane.ERROR_MESSAGE);
+            
+        // Will catch cases when validation errors occurs
         } catch (IllegalArgumentException ex) {
             JOptionPane.showMessageDialog(frmFinancials, 
                 ex.getMessage(), 
                 "Validation Error", JOptionPane.ERROR_MESSAGE);
+            
+        // Will catch cases when unexpected errors occurs
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(frmFinancials, 
                 "An error occurred during calculation: " + ex.getMessage(), 
@@ -1060,7 +1143,7 @@ public class Financials {
     // Function to print the report and save it to a file 
     private void printReport() {
         try {
-            // Ensure the directory exists
+            // Will ensure the directory exists
             File directory = new File("reports");
             if (!directory.exists()) {
                 directory.mkdirs(); // Create the directory if it doesn't exist
@@ -1080,10 +1163,13 @@ public class Financials {
             // Save the image to a file (PNG format)
             ImageIO.write(image, "PNG", file);
 
+            // Will show the confirmation when export succeeds
             JOptionPane.showMessageDialog(frmFinancials, "Report exported successfully!", "Export Success", JOptionPane.INFORMATION_MESSAGE);
-
+      
+    	// General error for any other exception
         } catch(IOException ex) {
             JOptionPane.showMessageDialog(frmFinancials, "Error exporting report: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+    
 }

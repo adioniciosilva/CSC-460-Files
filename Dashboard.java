@@ -6,7 +6,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import javax.swing.table.DefaultTableModel;
-// Used for the table sorting
 import javax.swing.*;
 import java.awt.Color;
 import java.awt.Font;
@@ -30,6 +29,7 @@ public class Dashboard {
 	/**
 	 * Launch the application.
 	 */
+	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -46,14 +46,16 @@ public class Dashboard {
 	/**
 	 * Create the application.
 	 */
+	
 	public Dashboard() {
-		
+		// Will ensure a connection to a SQLite database
 	    try {
+	    	// Load JDBC driver and establish database connection
 	        Class.forName("org.sqlite.JDBC");
-	        // Fix the path as suggested above
 	        String dbPath = new File("database/mamaspiddlins.sqlite").getAbsolutePath();
 	        conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
 	        
+	        // Prints a success if connection works or error message if not
 	        if (conn != null) {
 	            System.out.println("Connection successful");
 	            initialize();
@@ -62,6 +64,7 @@ public class Dashboard {
 	                "Error", JOptionPane.ERROR_MESSAGE);
 	            System.exit(1);
 	        }
+	    // Displays the error message to the user
 	    } catch (SQLException | ClassNotFoundException e) {
 	        JOptionPane.showMessageDialog(null, "Database error: " + e.getMessage(), 
 	            "Error", JOptionPane.ERROR_MESSAGE);
@@ -72,9 +75,11 @@ public class Dashboard {
 
 
     /**
-     * Initialize the contents of the frame.
+     * Initialize the contents of the frame
+     * Sets up all UI components such as tabs, tables, and buttons
      * @wbp.parser.entryPoint
      */
+	
 	private void initialize() {
 		// Has to be initialized first before the rest to load the data
 		// Creates a table to display the options for the item once searched
@@ -84,9 +89,10 @@ public class Dashboard {
 		new String[] {"Product ID", "Product Name", "Product Type", "Product Pattern", "Product Status"}
 		
 		));
+		
         // Disable editing in the table
         tblItems.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tblItems.setDefaultEditor(Object.class, null);  // Disable editor for the entire table
+        tblItems.setDefaultEditor(Object.class, null); 
         tblItems.getTableHeader().setReorderingAllowed(false);
 		tblItems.getTableHeader().setResizingAllowed(false);
         
@@ -116,7 +122,8 @@ public class Dashboard {
 		frmDashboard.setBounds(100, 100, 600, 600);
 		frmDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		// The label that will display the title of the page		
+		// The label that will display the title of the page	
+        // by: Jaiven Harris 
         JLabel lblNewLabel = new JLabel("MaMa's Piddlin");
         lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
         try {
@@ -196,7 +203,8 @@ public class Dashboard {
 		btnTimeLog.setBounds(328, 10, 128, 28);
 		navigationPanel.add(btnTimeLog);
 		
-		// Will allow the table to reset/refresh to see all data
+        // The button to allow the user to reset the table content
+        // by: Jaiven Harris 
 		JButton btnReturn = new JButton("Reset");
 		btnReturn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -215,29 +223,30 @@ public class Dashboard {
 	
 	// Function to allow the user to search for products by Item Name or Item Type
 	private void searchProduct(String searchTerm) {
-	    // Check if the input is empty
+	    // Checks if the input is empty, and displays message to user
 	    if (searchTerm == null || searchTerm.trim().isEmpty()) {
 	        JOptionPane.showMessageDialog(frmDashboard, "Search bar cannot be empty. Please enter a valid value.", "Validation Error", JOptionPane.WARNING_MESSAGE);
 	        return;
 	    }
 
 	    try {
-	        // Query to search in both ITEM_NM and ITEM_TYPE_DE columns
+	        // Uses a query to search in both item name and item type columns
 	        String query = "SELECT * FROM items WHERE ITEM_NM LIKE ? OR ITEM_TYPE_DE LIKE ?";
 
+			// Will prepare SQL statement to safely and ensure the preparedStatement is closed when done
 	        try (PreparedStatement stmt = conn.prepareStatement(query)) {
-	            // Bind parameters for both search columns
+	            // Allows when searching to match with anything within parameters
 	            stmt.setString(1, "%" + searchTerm + "%");
 	            stmt.setString(2, "%" + searchTerm + "%");
 
+	            // Will execute the query and clear the existing rows from the associated table
 	            ResultSet rs = stmt.executeQuery();
 	            DefaultTableModel model = (DefaultTableModel) tblItems.getModel();
-
-	            // Clear previous search results from the table
 	            model.setRowCount(0);
 
 	            boolean found = false;
 
+	            // Will go through the results and add the item info to the table to be displayed
 	            while (rs.next()) {
 	                found = true;
 	                model.addRow(new Object[]{
@@ -249,18 +258,17 @@ public class Dashboard {
 	                });
 	            }
 
-	            // If no results were found, display a message
+	            // If no results were found, then a message will display
 	            if (!found) {
 	                JOptionPane.showMessageDialog(frmDashboard, "No results found for \"" + searchTerm + "\"", "Search Result", JOptionPane.INFORMATION_MESSAGE);
 	            }
-
+	        // If error with the database, then a message will display
 	        } catch (SQLException ex) {
 	            JOptionPane.showMessageDialog(frmDashboard, "Error fetching data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	            ex.printStackTrace();
 	        }
-
+	    // General error for any other exception
 	    } catch (Exception e) {
-	        // General error for any other exception
 	        JOptionPane.showMessageDialog(frmDashboard, "An error occurred: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	        e.printStackTrace();
 	    }
@@ -268,13 +276,18 @@ public class Dashboard {
 	
 	// Function to allow the user to fetch products information
 	private void viewProducts() {
+        // Uses a query to search from all rows and columns of the items table
 		String query = "SELECT * FROM items";
+		
+		// Will prepare SQL statement to safely and ensure the preparedStatement is closed when done
 		try(PreparedStatement stmt = conn.prepareStatement(query)){
 	        ResultSet rs = stmt.executeQuery();
-			
+	        
+            // Will execute the query and clear the existing rows from the associated table
 			DefaultTableModel model = (DefaultTableModel) tblItems.getModel();
 			model.setRowCount(0);
 			
+            // Will go through the results and add the item info to the table to be displayed
 			while (rs.next()) {
 				model.addRow(new Object[] {
 					rs.getInt("ITEM_ID"),
@@ -285,6 +298,7 @@ public class Dashboard {
 				});
 			}
 
+	     // If error with the database, then a message will display
 		} catch(SQLException ex) {
 			ex.printStackTrace();
 		}

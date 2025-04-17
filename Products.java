@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Collections;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -18,7 +17,6 @@ import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableRowSorter;
 import javax.swing.JComboBox;
 import javax.swing.JButton;
 import javax.swing.JTabbedPane;
@@ -32,6 +30,8 @@ import javax.swing.JScrollPane;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import javax.swing.JSpinner;
+import javax.swing.table.TableRowSorter; // Used for the table sorting
+import java.util.Collections; // Used for the table sorting
 
 public class Products {
 	// Database connection variables
@@ -72,20 +72,20 @@ public class Products {
         });
     }
 
-    /**
-     * Constructor for the Products class
-     * Initializes the database connection and UI component
-     */
+	/**
+	 * Create the application.
+	 */
 
     
     public Products() {
+		// Will ensure a connection to a SQLite database
 	    try {
 	    	// Load JDBC driver and establish database connection
 	        Class.forName("org.sqlite.JDBC");
 	        String dbPath = new File("database/mamaspiddlins.sqlite").getAbsolutePath();
 	        conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
 	        
-	        // In case of unsuccessful connection to initialize UI components
+	        // Prints a success if connection works or error message if not
 	        if (conn != null) {
 	            System.out.println("Connection successful");
 	            initialize();
@@ -94,6 +94,8 @@ public class Products {
 	                "Error", JOptionPane.ERROR_MESSAGE);
 	            System.exit(1);
 	        }
+	        
+		// Displays the error message to the user
 	    } catch (SQLException | ClassNotFoundException e) {
 	        JOptionPane.showMessageDialog(null, "Database error: " + e.getMessage(), 
 	            "Error", JOptionPane.ERROR_MESSAGE);
@@ -135,6 +137,7 @@ public class Products {
 		panelDeleteProd.setLayout(null);
 		
 		// The label that will display the title of the page
+        // by: Jaiven Harris 
         JLabel lblProduct = new JLabel("Products");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
@@ -424,7 +427,7 @@ public class Products {
                 String input = txtProductDelId.getText().trim();
                 
                
-                // Validate input before parsing
+                // Will validate input before parsing
                 if (input.isEmpty()) {
                     JOptionPane.showMessageDialog(frmProducts, 
                         "Search bar cannot be empty. Please enter a numeric value.",
@@ -432,7 +435,7 @@ public class Products {
                         JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                
+                // Will accept the value if applicable
                 try {
                     int productId = Integer.parseInt(input);
                     deleteProduct(productId);
@@ -475,7 +478,8 @@ public class Products {
         viewProductInfo();
         editProductInfo();
     }
- // Helper method to show consistent warning messages
+    
+    // A function that will show consistent warning messages when called
     private void showWarning(String title, String message) {
         JOptionPane.showMessageDialog(frmProducts, 
             message,
@@ -488,6 +492,7 @@ public class Products {
         // Will validate the input, and display message if empty
     	String productIdStr = txtProductId.getText().trim();
         
+        // Ensures the product id is not left empty
         if (productIdStr.isEmpty()) {
             JOptionPane.showMessageDialog(frmProducts, "Search bar cannot be empty. Please enter a valid value.", 
                 "Validation Error", JOptionPane.WARNING_MESSAGE);
@@ -506,18 +511,25 @@ public class Products {
             // Will open window to edit the product
             openEditProductWindow(productId);
             
+        // Will catch cases when invalid number is entered displaying a message along with it
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(frmProducts, "Invalid Product ID format", 
                 "Error", JOptionPane.ERROR_MESSAGE);
+
+        // If error with the database, then a message will display
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(frmProducts, "Database error: " + e.getMessage(), 
                 "Error", JOptionPane.ERROR_MESSAGE);
         }
+        
     }
 
     // Function that will check if product's ID actually exists in the database
     private boolean productExists(int productId) throws SQLException {
+        // A query to first check if a product/item record exists
         String query = "SELECT 1 FROM items WHERE ITEM_ID = ?";
+        
+		// Will prepare SQL statement to safely and ensure the preparedStatement is closed when done
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, productId);
             // Returns true if a record does exist. 
@@ -527,11 +539,15 @@ public class Products {
 
     // Function that opens the window for the specified product
     private void openEditProductWindow(int productId) throws SQLException {
-        String query = "SELECT * FROM items WHERE ITEM_ID = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+        // A query to first check if a product/item record exists
+    	String query = "SELECT * FROM items WHERE ITEM_ID = ?";
+        
+		// Will prepare SQL statement to safely and ensure the preparedStatement is closed when done
+    	try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, productId);
             ResultSet rs = stmt.executeQuery();
             
+            // Will go through the results and add the item info to the new page to be displayed
             if (rs.next()) {
                 EditProduct editWindow = new EditProduct(
                 	    rs.getInt("ITEM_ID"),
@@ -542,9 +558,10 @@ public class Products {
                 	    rs.getString("CATEGORY_CD"),
                 	    rs.getDouble("MATERIAL_COST_AM"),
                 	    rs.getString("COOZIE_SIZE_DE"),
-                	    getProductQuantity(rs.getInt("ITEM_ID"))  // You'll need to implement this method
+                	    getProductQuantity(rs.getInt("ITEM_ID")) 
                 	);
                 
+                // Will close the Products page and open the Edit Product
                 frmProducts.setVisible(false);
                 editWindow.frmEditProduct.setVisible(true);
             }
@@ -553,32 +570,40 @@ public class Products {
     
     // Function that will check the quantity of a product from either sales or donations table
     private int getProductQuantity(int itemId) throws SQLException {
-        // First check sales table
+        // A query that checks sales table
         String salesQuery = "SELECT QUANTITY_SOLD_NO FROM sales WHERE ITEM_ID = ?";
+        
+		// Will prepare SQL statement to safely and ensure the preparedStatement is closed when done
         try (PreparedStatement stmt = conn.prepareStatement(salesQuery)) {
             stmt.setInt(1, itemId);
             ResultSet rs = stmt.executeQuery();
+            
+            // Will go through the sales and returns quantity if found
             if (rs.next()) {
                 return rs.getInt(1);
             }
         }
         
-        // Then check donations table
+        // A query that checks donations table
         String donationsQuery = "SELECT QUANTITY_DONATED_NO FROM donations WHERE ITEM_ID = ?";
+		// Will prepare SQL statement to safely and ensure the preparedStatement is closed when done
         try (PreparedStatement stmt = conn.prepareStatement(donationsQuery)) {
             stmt.setInt(1, itemId);
             ResultSet rs = stmt.executeQuery();
+            
+            // Will go through the donations and returns quantity if found
             if (rs.next()) {
                 return rs.getInt(1);
             }
         }
         
-        return 0; // Default if not found in either table
+        // Default if not found in either table
+        return 0; 
     }
     
     // Function that will allow the user to add a new product to the database
     private void addProduct() {
-        // Get all input values (same as before)
+        // Get all input values from the user
         String prodName = txtProdName.getText().trim();
         String prodPattern = txtProdPattern.getText().trim();
         String materialCostStr = txtMaterialCost.getText().trim();
@@ -590,51 +615,59 @@ public class Products {
         String timeSpentStr = txtTimeSpent.getText().trim();
         int quantity = (int) spinnerProductQuantity.getValue();
 
-        // Input validation (same as before)
+        // Ensures product name is not empty
         if (prodName.isEmpty()) {
             showWarning("Required Field", "Please enter a product name.");
             txtProdName.requestFocus();
             return;
         }
         
+        // Ensures product type is not empty
         if (itemType.isEmpty()) {
             showWarning("Required Field", "Please specify the product type.");
             txtItemType.requestFocus();
             return;
         }
         
+        // Ensures product status is not empty
         if (productStatus == null || productStatus.isEmpty()) {
             showWarning("Required Field", "Please select a product status.");
             cboxProductStatusAdd.requestFocus();
             return;
         }
         
+        // Ensures product category is not empty
         if (category == null || category.isEmpty()) {
             showWarning("Required Field", "Please select a product category.");
             cboxDonSelAdd.requestFocus();
             return;
         }
         
+        // Ensures material cost is not empty
         if (materialCostStr.isEmpty()) {
             showWarning("Required Field", "Please enter the material cost.");
             txtMaterialCost.requestFocus();
             return;
         }
         
-     // Type-specific validations
+        // Will validate quilt pattern
+        // When a product type is a quilt, the quilt pattern must be filled in
         if (itemType.toLowerCase().contains("quilt")) {
-            // Quilt-specific validation
             if (prodPattern.isEmpty()) {
                 showWarning("Required Field", "Please enter a quilt pattern for quilt items.");
                 txtProdPattern.requestFocus();
                 return;
             }
+            
+            // Ensure a coozie size is not selected for quilts
             if (!((String)cboxCoozieSize.getSelectedItem()).isEmpty()) {
                 showWarning("Invalid Selection", "Coozie size should not be selected for quilt items.");
                 cboxCoozieSize.setSelectedIndex(0);
                 cboxCoozieSize.requestFocus();
                 return;
             }
+            
+        // When product type is a coozie, the coozie size must be chosen
         } else if (itemType.toLowerCase().contains("coozie")) {
             // Coozie-specific validation
             if (((String)cboxCoozieSize.getSelectedItem()).isEmpty()) {
@@ -642,14 +675,17 @@ public class Products {
                 cboxCoozieSize.requestFocus();
                 return;
             }
+            // Ensures a quilt pattern is not entered for coozie
             if (!prodPattern.isEmpty()) {
                 showWarning("Invalid Entry", "Quilt pattern should not be entered for coozie items.");
                 txtProdPattern.setText("");
                 txtProdPattern.requestFocus();
                 return;
             }
-        } else {
-            // Other item types validation
+            
+        } 
+        else {
+            // For other item types, will ensure neither is entered
             if (!prodPattern.isEmpty()) {
                 showWarning("Invalid Entry", "Quilt pattern should only be entered for quilt items.");
                 txtProdPattern.setText("");
@@ -664,7 +700,8 @@ public class Products {
             }
         }
         
-     // Donation-specific validation
+        // Donation-specific validation
+        // Where product category is donate and sell price is not empty
         if ("Donate".equals(category) && !txtProdDSPrices.getText().trim().isEmpty()) {
             showWarning("Invalid Entry", "Sell price should not be entered for donated items.");
             txtProdDSPrices.setText("");
@@ -672,7 +709,7 @@ public class Products {
             return;
         }
         
-
+        // Where product category is inventory and sell price is not empty
         if ("Inventory".equals(category) && !txtProdDSPrices.getText().trim().isEmpty()) {
             showWarning("Invalid Entry", "Sell price should not be entered for inventory items.");
             txtProdDSPrices.setText("");
@@ -680,7 +717,7 @@ public class Products {
             return;
         }
 
-
+        // Where sell price is required when an item's category is sell
         if ("Sell".equals(category)) {
             if (sellPriceStr.isEmpty()) {
                 showWarning("Field Required", "Please enter a sell price for items in sell category.");
@@ -689,27 +726,29 @@ public class Products {
             }
         }
         
-        // Category-specific validations
+        // Will check if category is sell or donate, and ensure a valid value is entered
         if (("Sell".equals(category) || "Donate".equals(category))) {
             if (quantity <= 0) {
-                showWarning("Invalid Quantity", "Please enter a quantity greater than 0 for sell/donate items.");
+                showWarning("Invalid Quantity", "Please enter a valid quantity (greater than 0) for Sell or Donate categories.");
                 spinnerProductQuantity.requestFocus();
                 return;
             }
         }
-
+        
+        // Will get the time spent input, and if empty will ensure a amount spent is entered
         if(timeSpentStr.isEmpty()) {
         	showWarning("Required Field", "Please enter the amount of time spent.");
         	txtTimeSpent.requestFocus();
         	return;
         }
         
-        // Parse numeric values (same as before)
+        // Parse the numeric values 
         double materialCost = 0.0;
         double sellPrice = 0.0;
         int timeSpent = 0;
         
         try {
+        	// Will validate material cost
             materialCost = Double.parseDouble(materialCostStr);
             if (materialCost <= 0) {
                 showWarning("Invalid Material Cost", "Material cost must be greater than 0.");
@@ -717,6 +756,7 @@ public class Products {
                 return;
             }
             
+            // Will validate sell price for sell categories
             if ("Sell".equals(category)) {
                 if (sellPriceStr.isEmpty()) {
                     showWarning("Field Required", "Please enter a sell price for items in sell category.");
@@ -725,6 +765,7 @@ public class Products {
                 }
                 sellPrice = Double.parseDouble(sellPriceStr);
                 
+                // Will validate sell price to be sure it is greater than 0
                 if (sellPrice <= 0) {
                     showWarning("Invalid Sell Price", "Sell price must be greater than 0.");
                     txtProdDSPrices.requestFocus();
@@ -732,6 +773,7 @@ public class Products {
                 }
             }
             
+            // Will validate time spent 
             if (!timeSpentStr.isEmpty()) {
                 timeSpent = Integer.parseInt(timeSpentStr);
                 if (timeSpent <= 0) {
@@ -740,22 +782,26 @@ public class Products {
                     return;
                 }
             }
+            
+        // Will catch cases when invalid number is entered displaying a message along with it    
         } catch (NumberFormatException ex) {
             showWarning("Invalid Number Format", "Please enter valid numbers in numeric fields.");
             return;
         }
 
-        // Start transaction
+        // Will start the transaction
         try {
             conn.setAutoCommit(false);
             
-            // Insert into items table
+            // A query to insert into items table
             String itemQuery = "INSERT INTO items (ITEM_NM, ITEM_TYPE_DE, ITEM_STATUS_CD, " +
                              "QUILT_PATTERN_CD, CATEGORY_CD, DATE_CREATED_DT, " +
                              "COOZIE_SIZE_DE, MATERIAL_COST_AM) " +
                              "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             
             int itemId = -1;
+            
+    		// Will prepare SQL statement to safely and ensure the preparedStatement is closed when done
             try (PreparedStatement itemStmt = conn.prepareStatement(itemQuery, PreparedStatement.RETURN_GENERATED_KEYS)) {
                 itemStmt.setString(1, prodName);
                 itemStmt.setString(2, itemType);
@@ -766,12 +812,14 @@ public class Products {
                 itemStmt.setString(7, itemType.toLowerCase().contains("coozie") ? coozieSize : null);
                 itemStmt.setDouble(8, materialCost);
                 
+                // Will execute insert and checks for success
                 int affectedRows = itemStmt.executeUpdate();
                 
                 if (affectedRows == 0) {
                     throw new SQLException("Creating item failed, no rows affected.");
                 }
                 
+                // Will retrieve the auto-generated key
                 try (ResultSet generatedKeys = itemStmt.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         itemId = generatedKeys.getInt(1);
@@ -781,15 +829,16 @@ public class Products {
                 }
             }
             
-            // Use helper methods for related tables
+            // Will use helper methods for related tables
             if ("Sell".equals(category)) {
-                addToSalesTable(itemId, sellPrice, quantity);  // Using your helper method
-            } else if ("Donate".equals(category)) {
-                addToDonationsTable(itemId, quantity);  // Using your helper method
+                addToSalesTable(itemId, sellPrice, quantity);  
+            } 
+            else if ("Donate".equals(category)) {
+                addToDonationsTable(itemId, quantity);  
             }
             
             if (!timeSpentStr.isEmpty() && timeSpent > 0) {
-                addToTimeLogs(itemId, timeSpent);  // Using your helper method
+                addToTimeLogs(itemId, timeSpent);  
             }
             
             // Commit transaction
@@ -799,13 +848,17 @@ public class Products {
                 "Product added successfully with ID: " + itemId, 
                 "Success", JOptionPane.INFORMATION_MESSAGE);
             
+            // Will call the function to use in the form
             clearAddProductForm();
             viewProductInfo();
             editProductInfo();
             
+    	// If error with the database, then a message will display
         } catch (SQLException ex) {
             try {
                 conn.rollback();
+                
+           // If error with the database, then a message will display
             } catch (SQLException e) {
                 ex.addSuppressed(e);
             }
@@ -816,16 +869,20 @@ public class Products {
         } finally {
             try {
                 conn.setAutoCommit(true);
+            // If error with the database, then a message will display
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
         }
     }
 
-    // Your existing helper methods remain exactly the same:
+    // A helper methods to add values into sales table
     private void addToSalesTable(int itemId, double sellPrice, int quantity) throws SQLException {
+    	// A query to add all values into the sales table
         String salesQuery = "INSERT INTO sales (ITEM_ID, SALE_DT, QUANTITY_SOLD_NO, SALE_PRICE_AM) " +
                           "VALUES (?, ?, ?, ?)";
+        
+		// Will prepare SQL statement to safely and ensure the preparedStatement is closed when done
         try (PreparedStatement salesStmt = conn.prepareStatement(salesQuery)) {
             salesStmt.setInt(1, itemId);
             salesStmt.setString(2, LocalDate.now().format(dbFormatter));  // Use formatted current date
@@ -835,10 +892,13 @@ public class Products {
         }
     }
     
-
+    // A helper methods to add values into donation table
     private void addToDonationsTable(int itemId, int quantity) throws SQLException {
+    	// A query to add all values into the donation table
         String donationsQuery = "INSERT INTO donations (ITEM_ID, DONATION_DT, QUANTITY_DONATED_NO) " +
                               "VALUES (?, ?, ?)";
+        
+		// Will prepare SQL statement to safely and ensure the preparedStatement is closed when done
         try (PreparedStatement donationsStmt = conn.prepareStatement(donationsQuery)) {
             donationsStmt.setInt(1, itemId);
             donationsStmt.setString(2, LocalDate.now().format(dbFormatter));
@@ -847,8 +907,12 @@ public class Products {
         }
     }
 
+    // A helper methods to add values into time logs table
     private void addToTimeLogs(int itemId, int timeSpent) throws SQLException {
+    	// A query to add all values into the times log table
         String timeQuery = "INSERT INTO time_logs (ITEM_ID, TIME_SPENT_NO) VALUES (?, ?)";
+        
+		// Will prepare SQL statement to safely and ensure the preparedStatement is closed when done
         try (PreparedStatement timeStmt = conn.prepareStatement(timeQuery)) {
             timeStmt.setInt(1, itemId);
             timeStmt.setInt(2, timeSpent);
@@ -873,6 +937,7 @@ public class Products {
 
     // Function that will delete a product and along with its associated information from the database
         private void deleteProduct(int productDelete) {
+        	// Will show error if input is a negative value
             if (productDelete <= 0) {
                 JOptionPane.showMessageDialog(frmProducts, 
                     "Product ID must be a positive number. Please enter a valid ID.",
@@ -882,13 +947,17 @@ public class Products {
             }
 
             try {
-                // First check if the product exists
+                // Will first check if the product exists
                 String productName = "";
                 String checkQuery = "SELECT ITEM_NM FROM items WHERE ITEM_ID = ?";
+                
+    			// Will prepare SQL statement to safely and ensure the preparedStatement is closed when done
                 try (PreparedStatement pst = conn.prepareStatement(checkQuery)) {
                     pst.setInt(1, productDelete);
                     
                     ResultSet rs = pst.executeQuery();
+                    
+    	            // Will execute the query and display dialog box if an invalid value is given
                     if (!rs.next()) {
                         JOptionPane.showMessageDialog(frmProducts, "No product found with the ID '" + productDelete + "'.", 
                             "Search Result", JOptionPane.INFORMATION_MESSAGE);
@@ -897,7 +966,7 @@ public class Products {
                     productName = rs.getString("ITEM_NM");
                 }
                 
-                // Show confirmation dialog
+                // Will show a confirmation dialog
                 int confirm = JOptionPane.showConfirmDialog(
                     frmProducts, 
                     "Are you sure you want to permanently delete Product #" + productDelete + 
@@ -906,8 +975,9 @@ public class Products {
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.WARNING_MESSAGE);
                 
+                // If user canceled the deletion
                 if (confirm != JOptionPane.YES_OPTION) {
-                    return; // User canceled the deletion
+                    return; 
                 }
 
 
@@ -915,65 +985,82 @@ public class Products {
                 conn.setAutoCommit(false);
 
                 // Delete order is based on foreign key constraints
-                // Delete from financials (if any exist)
+                // A query to delete from financials table based on the id 
                 String deleteFinancials = "DELETE FROM financials WHERE SALE_ID IN (SELECT SALE_ID FROM sales WHERE ITEM_ID = ?)";
                 try (PreparedStatement pst = conn.prepareStatement(deleteFinancials)) {
                     pst.setInt(1, productDelete);
                     pst.executeUpdate();
                 }
 
-                // Delete from sales
+                // A query to delete from sales table based on the id 
                 String deleteSales = "DELETE FROM sales WHERE ITEM_ID = ?";
                 try (PreparedStatement pst = conn.prepareStatement(deleteSales)) {
                     pst.setInt(1, productDelete);
                     pst.executeUpdate();
                 }
 
-                // Delete from donations
+                // A query to delete from donation table based on the id 
                 String deleteDonations = "DELETE FROM donations WHERE ITEM_ID = ?";
                 try (PreparedStatement pst = conn.prepareStatement(deleteDonations)) {
                     pst.setInt(1, productDelete);
                     pst.executeUpdate();
                 }
 
-                // Delete from time_logs
+                // A query to delete from time logs table based on the id 
                 String deleteTimeLogs = "DELETE FROM time_logs WHERE ITEM_ID = ?";
                 try (PreparedStatement pst = conn.prepareStatement(deleteTimeLogs)) {
                     pst.setInt(1, productDelete);
                     pst.executeUpdate();
                 }
 
-                // Finally delete from items
+                // A query that will delete the item 
                 String deleteItems = "DELETE FROM items WHERE ITEM_ID = ?";
+                
+    			// Will prepare SQL statement to safely and ensure the preparedStatement is closed when done
                 try (PreparedStatement pst = conn.prepareStatement(deleteItems)) {
                     pst.setInt(1, productDelete);
                     int affectedRows = pst.executeUpdate();
                     
+                    // Will handle the results 
                     if (affectedRows > 0) {
-                        conn.commit(); // Commit the transaction
+                    	// Commit the transaction
+                        conn.commit(); 
                         JOptionPane.showMessageDialog(frmProducts, "Product and all related records deleted successfully.", 
                             "Success", JOptionPane.INFORMATION_MESSAGE);
-                        viewProductInfo(); // Refresh the table
-                        editProductInfo(); // Refresh the edit table
-                        txtProductDelId.setText(""); // Clear the input field
+                        // Refreshes the table
+                        viewProductInfo(); 
+                        // Refresh the edit table
+                        editProductInfo(); 
+                     // Clear the input field
+                        txtProductDelId.setText(""); 
                     } else {
-                        conn.rollback(); // Rollback if no rows affected
+                    	// Rollback if no rows affected
+                        conn.rollback(); 
                         JOptionPane.showMessageDialog(frmProducts, "Error deleting the product.", 
                             "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
+        	
+            // If error with the database, then a message will display
             } catch (SQLException e) {
                 try {
-                    conn.rollback(); // Rollbacks on errors
+                	// Will rollbacks on errors 
+                    conn.rollback(); 
+                    
+                // If error with the database, then a message will display 
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
                 JOptionPane.showMessageDialog(frmProducts, "Error while deleting the product: " + e.getMessage(), 
                     "Error", JOptionPane.ERROR_MESSAGE);
                 e.printStackTrace();
+                
             } finally {
                 try {
-                    conn.setAutoCommit(true); // Restore auto-commit
+                	// Restore auto-commit
+                    conn.setAutoCommit(true); 
+                    
+                // If error with the database, then a message will display 
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -983,13 +1070,18 @@ public class Products {
     
 	// Function to allow the user to fetch product information
     private void viewProductInfo() {
+    	// A query that will select all items information
         String query = "SELECT * FROM items";
+        
+		// Will prepare SQL statement to safely and ensure the preparedStatement is closed when done
         try(PreparedStatement stmt = conn.prepareStatement(query)){
-            ResultSet rs = stmt.executeQuery();
             
+            // Will execute the query and clear the existing rows from the associated table
+        	ResultSet rs = stmt.executeQuery();
             DefaultTableModel model = (DefaultTableModel) tblList.getModel();
             model.setRowCount(0);
             
+            // Will go through the results and add the item info to the table to be displayed
             while (rs.next()) {
                 model.addRow(new Object[] {
                     rs.getInt("ITEM_ID"),
@@ -997,6 +1089,8 @@ public class Products {
                     rs.getString("ITEM_NM")
                 });
             }
+            
+	    // If error with the database, then a message will display
         } catch(SQLException ex) {
             ex.printStackTrace();
         }
@@ -1004,13 +1098,18 @@ public class Products {
     
 	// Function to allow the user to fetch and view product information to edit
     private void editProductInfo() {
+    	// A query that will select all items information
         String query = "SELECT * FROM items";
+        
+		// Will prepare SQL statement to safely and ensure the preparedStatement is closed when done
         try(PreparedStatement stmt = conn.prepareStatement(query)){
-            ResultSet rs = stmt.executeQuery();
-            
+           
+            // Will execute the query and clear the existing rows from the associated table
+        	ResultSet rs = stmt.executeQuery();
             DefaultTableModel model = (DefaultTableModel) tblProducts.getModel();
             model.setRowCount(0);
             
+            // Will go through the results and add the item info to the table to be displayed
             while (rs.next()) {
                 // Get date as string directly
                 String dateStr = rs.getString("DATE_CREATED_DT");
@@ -1037,6 +1136,7 @@ public class Products {
                 // Format material cost with 2 decimal places
                 String formattedMaterialCost = String.format("%.2f", rs.getDouble("MATERIAL_COST_AM"));
                 
+                // Add row to the associated table
                 model.addRow(new Object[] {
                     rs.getInt("ITEM_ID"),
                     rs.getString("ITEM_NM"),
@@ -1049,6 +1149,8 @@ public class Products {
                     formattedMaterialCost    // Changed to getDouble for decimal values
                 });
             }
+         
+	    // If error with the database, then a message will display
         } catch(SQLException ex) {
             JOptionPane.showMessageDialog(frmProducts, "Error loading product data: " + ex.getMessage(),
                                         "Error", JOptionPane.ERROR_MESSAGE);
@@ -1058,11 +1160,16 @@ public class Products {
     
  // Add this helper method to update item dates
     private void updateItemDate(int itemId, LocalDate correctDate) {
+    	// A query
         String updateQuery = "UPDATE items SET DATE_CREATED_DT = ? WHERE ITEM_ID = ?";
+        
+        // Will execute the query and clear the existing rows from the associated tables
         try (PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
             stmt.setString(1, correctDate.format(dbFormatter));
             stmt.setInt(2, itemId);
             stmt.executeUpdate();
+            
+    	// If error with the database, then a message will display    
         } catch (SQLException e) {
             System.err.println("Error updating item date for item " + itemId);
             e.printStackTrace();

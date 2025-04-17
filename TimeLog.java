@@ -1,3 +1,4 @@
+// Packages to import for the java project
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -8,14 +9,12 @@ import javax.swing.ListSelectionModel;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableRowSorter;
 import java.awt.Color;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import javax.swing.JButton;
 import java.awt.Font;
 import java.awt.FontFormatException;
@@ -25,6 +24,8 @@ import java.io.IOException;
 import java.awt.event.ActionEvent;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
+import javax.swing.table.TableRowSorter; // Used for the table sorting
+import java.util.Collections; // Used for the table sorting
 
 public class TimeLog {
 
@@ -38,6 +39,7 @@ public class TimeLog {
 	/**
 	 * Launch the application.
 	 */
+	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -56,19 +58,25 @@ public class TimeLog {
 	 */
 	
 	public TimeLog() {
+		// Will ensure a connection to a SQLite database
 	    try {
+	    	// Load JDBC driver and establish database connection
 	        Class.forName("org.sqlite.JDBC");
 	        String dbPath = new File("database/mamaspiddlins.sqlite").getAbsolutePath();
 	        conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
 	        
+	        // Prints a success if connection works or error message if not
 	        if (conn != null) {
 	            System.out.println("Connection successful");
 	            initialize();
+	            
 	        } else {
 	            JOptionPane.showMessageDialog(null, "Failed to connect to database", 
 	                "Error", JOptionPane.ERROR_MESSAGE);
 	            System.exit(1);
 	        }
+	     
+	    // Displays the error message to the user
 	    } catch (SQLException | ClassNotFoundException e) {
 	        JOptionPane.showMessageDialog(null, "Database error: " + e.getMessage(), 
 	            "Error", JOptionPane.ERROR_MESSAGE);
@@ -77,10 +85,11 @@ public class TimeLog {
 	    }
 	}
 
-	/**
-	 * Initialize the contents of the frame.
-	 * @wbp.parser.entryPoint
-	 */
+    /**
+     * Initialize the contents of the frame
+     * Sets up all UI components such as tabs, tables, and buttons
+     * @wbp.parser.entryPoint
+     */
 	
 	private void initialize() {
 		// Has to be initialized first before the rest to load the data
@@ -125,6 +134,7 @@ public class TimeLog {
 	
 		
 		// The label that will display the title of the page
+        // by: Jaiven Harris 
 		JLabel lblTimeLog = new JLabel("Time Log");
         try {
             Font caveatBrush = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/CaveatBrush-Regular.ttf"));
@@ -167,7 +177,8 @@ public class TimeLog {
 		frmTimeLog.getContentPane().add(backgroundPanel);
 		backgroundPanel.setLayout(null);
 		
-		// Will allow the table to reset/refresh to see all data
+        // The button to allow the user to reset the table content
+        // by: Jaiven Harris 
 		JButton btnReturn = new JButton("Reset");
 		btnReturn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -198,17 +209,20 @@ public class TimeLog {
 	
 	// Function to allow the user to fetch time log information
 	private void viewTimeLog() {
-	    // A query to join time_logs and items tables
+	    // Uses a query to join time log and items tables
 	    String query = "SELECT tl.*, i.ITEM_NM, i.ITEM_TYPE_DE " +
                 "FROM time_logs tl " +
                 "JOIN items i ON tl.ITEM_ID = i.ITEM_ID";
 	    
+		// Will prepare SQL statement to safely and ensure the preparedStatement is closed when done
 	    try (PreparedStatement stmt = conn.prepareStatement(query)) {
-	        ResultSet rs = stmt.executeQuery();
 	        
-	        DefaultTableModel model = (DefaultTableModel) tblTime.getModel();
-	        model.setRowCount(0);  // Clear existing rows
+            // Will execute the query and clear the existing rows from the associated table
+	        ResultSet rs = stmt.executeQuery();
+	    	DefaultTableModel model = (DefaultTableModel) tblTime.getModel();
+	        model.setRowCount(0); 
 
+            // Will go through the results and add the time info to the table to be displayed
 	        while (rs.next()) {
 	            model.addRow(new Object[] {
 	                rs.getInt("TIME_LOG_ID"),
@@ -219,8 +233,9 @@ public class TimeLog {
 	            });
 	        }
 
-
+	    // If error with the database, then a message will display
 	    } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(frmTimeLog, "Error fetching data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	        ex.printStackTrace();
 	    }
 	}
@@ -228,32 +243,33 @@ public class TimeLog {
 
 	// Function to allow the user to fetch and search time log information
 	private void searchTimeLog(String searchTerm) {
-	    // Check if the input is empty
+	    // Checks if the input is empty, and displays message to user
 	    if (searchTerm == null || searchTerm.trim().isEmpty()) {
 	        JOptionPane.showMessageDialog(frmTimeLog, "Search bar cannot be empty. Please enter a valid value.", "Validation Error", JOptionPane.WARNING_MESSAGE);
 	        return;
 	    }
 
 	    try {
-	        // Query to search in both ITEM_NM and ITEM_TYPE_DE columns
+	        // Uses a query to search in both item name and item type columns that are joined together 
 	        String query = "SELECT tl.*, i.ITEM_NM, i.ITEM_TYPE_DE " +
 	                       "FROM time_logs tl " +
 	                       "JOIN items i ON tl.ITEM_ID = i.ITEM_ID " +
 	                       "WHERE i.ITEM_NM LIKE ? OR i.ITEM_TYPE_DE LIKE ?";
 
+			// Will prepare SQL statement to safely and ensure the preparedStatement is closed when done
 	        try (PreparedStatement pst = conn.prepareStatement(query)) {
 	            // Bind parameters for both search columns
 	            pst.setString(1, "%" + searchTerm + "%");
 	            pst.setString(2, "%" + searchTerm + "%");
 
+	            // Will execute the query and clear the existing rows from the associated table
 	            ResultSet rs = pst.executeQuery();
 	            DefaultTableModel model = (DefaultTableModel) tblTime.getModel();
-
-	            // Clear previous search results from the table
 	            model.setRowCount(0);
 
 	            boolean found = false;
 
+	            // Will go through the results and add the item info to the table to be displayed
 	            while (rs.next()) {
 	                found = true;
 	                model.addRow(new Object[]{
@@ -265,7 +281,7 @@ public class TimeLog {
 	                });
 	            }
 
-	            // If no results were found, display a message
+	            // If no results were found, then a message will display
 	            if (!found) {
 	                JOptionPane.showMessageDialog(frmTimeLog, "No results found for \"" + searchTerm + "\"", "Search Result", JOptionPane.INFORMATION_MESSAGE);
 	            }
@@ -273,13 +289,13 @@ public class TimeLog {
 	            // Set the table model with the results
 	            tblTime.setModel(model);
 
+	   	     // If error with the database, then a message will display
 	        } catch (SQLException ex) {
 	            JOptionPane.showMessageDialog(frmTimeLog, "Error fetching data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	            ex.printStackTrace();
 	        }
-
+		// General error for any other exception
 	    } catch (Exception e) {
-	        // General error for any other exception
 	        JOptionPane.showMessageDialog(frmTimeLog, "An error occurred: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	        e.printStackTrace();
 	    }
