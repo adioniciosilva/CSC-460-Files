@@ -25,7 +25,8 @@ import java.awt.event.ActionEvent;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.table.TableRowSorter; // Used for the table sorting
-import java.util.Collections; // Used for the table sorting
+import java.util.Collections;
+import javax.swing.border.LineBorder; // Used for the table sorting
 
 public class TimeLog {
 
@@ -173,6 +174,7 @@ public class TimeLog {
 		
 		// A background panel that will be used for decoration for the page
 		JPanel backgroundPanel = new JPanel();
+		backgroundPanel.setBorder(new LineBorder(new Color(0, 0, 0)));
 		backgroundPanel.setBounds(29, 100, 627, 507);
 		frmTimeLog.getContentPane().add(backgroundPanel);
 		backgroundPanel.setLayout(null);
@@ -186,7 +188,7 @@ public class TimeLog {
 			}
 		});
 		btnReturn.setFont(new Font("Dialog", Font.BOLD, 12));
-		btnReturn.setBounds(362, 40, 100, 21);
+		btnReturn.setBounds(362, 40, 110, 21);
 		backgroundPanel.add(btnReturn);
 		
 		// A button that will allow the user to return back to the home screen

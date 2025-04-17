@@ -15,7 +15,8 @@ import java.io.File;
 import java.io.IOException;
 import java.awt.event.ActionEvent;
 import javax.swing.table.TableRowSorter; // Used for the table sorting
-import java.util.Collections; // Used for the table sorting
+import java.util.Collections;
+import javax.swing.border.LineBorder; // Used for the table sorting
 
 public class Dashboard {
 
@@ -162,6 +163,7 @@ public class Dashboard {
 
 		// The background to the navigation bar
 		JPanel navigationPanel = new JPanel();
+		navigationPanel.setBorder(new LineBorder(new Color(0, 0, 0)));
 		navigationPanel.setBounds(51, 60, 466, 52);
 		frmDashboard.getContentPane().add(navigationPanel);
 		navigationPanel.setLayout(null);

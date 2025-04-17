@@ -163,7 +163,7 @@ public class Products {
 		// A textfield to add new products based on product name into database 
         txtProdName = new JTextField();
         txtProdName.setToolTipText("Insert product name");
-        txtProdName.setBounds(276, 20, 179, 19);
+        txtProdName.setBounds(300, 20, 179, 19);
         panelAddProd.add(txtProdName);
         txtProdName.setColumns(10);
         
@@ -176,7 +176,7 @@ public class Products {
 		String[] sortCoozieSize = new String [] {"","Small", "Medium", "Large"};
 		cboxCoozieSize = new JComboBox<>(sortCoozieSize);
 		cboxCoozieSize.setToolTipText("Choose coozie size if applicable");
-		cboxCoozieSize.setBounds(276, 101, 179, 21);
+		cboxCoozieSize.setBounds(300, 101, 179, 21);
 		panelAddProd.add(cboxCoozieSize);
 		
 		// A label that will display to the user item type
@@ -187,7 +187,7 @@ public class Products {
 		// A textfield to add new products based on item type into database 
 		txtItemType = new JTextField();
 		txtItemType.setToolTipText("Enter the product type");
-		txtItemType.setBounds(276, 54, 179, 19);
+		txtItemType.setBounds(300, 54, 179, 19);
 		panelAddProd.add(txtItemType);
 		txtItemType.setColumns(10);
 		
@@ -200,7 +200,7 @@ public class Products {
 		// A textfield to add new products based on product pattern into database 
 		txtProdPattern = new JTextField();
 		txtProdPattern.setToolTipText("Enter the quilt pattern if applicable");
-		txtProdPattern.setBounds(276, 148, 179, 19);
+		txtProdPattern.setBounds(300, 148, 179, 19);
 		txtProdPattern.setColumns(10);
 		panelAddProd.add(txtProdPattern);
 		
@@ -213,14 +213,14 @@ public class Products {
         String[] sortStatus = new String[] {"", "Finished", "Not Started", "Not Finished"};
         cboxProductStatusAdd = new JComboBox<>(sortStatus);
         cboxProductStatusAdd.setToolTipText("Choose current status for the product if applicable");
-        cboxProductStatusAdd.setBounds(276, 201, 179, 21);
+        cboxProductStatusAdd.setBounds(300, 201, 179, 21);
         panelAddProd.add(cboxProductStatusAdd);
 
         
 		// A textfield to add new products based on material costs into database 
         txtMaterialCost = new JTextField();    
         txtMaterialCost.setToolTipText("Enter the material cost ");
-        txtMaterialCost.setBounds(276, 247, 179, 19);
+        txtMaterialCost.setBounds(300, 247, 179, 19);
         txtMaterialCost.setColumns(10);
         panelAddProd.add(txtMaterialCost);
         
@@ -238,7 +238,7 @@ public class Products {
         String[] sortCategory = new String[] {"", "Inventory", "Sell", "Donate"};
         cboxDonSelAdd = new JComboBox<>(sortCategory);
         cboxDonSelAdd.setToolTipText("Choose the product category");
-        cboxDonSelAdd.setBounds(276, 289, 179, 21);
+        cboxDonSelAdd.setBounds(300, 289, 179, 21);
         panelAddProd.add(cboxDonSelAdd);
         
         
@@ -251,7 +251,7 @@ public class Products {
 		// A textfield to add new products based on product sell price into database 
 		txtProdDSPrices = new JTextField();
 		txtProdDSPrices.setToolTipText("Enter the product selling price");
-		txtProdDSPrices.setBounds(276, 383, 179, 19);
+		txtProdDSPrices.setBounds(300, 383, 179, 19);
 		txtProdDSPrices.setColumns(10);
 		panelAddProd.add(txtProdDSPrices);
 		
@@ -263,7 +263,7 @@ public class Products {
 		// A textfield to add new products based on product's time spent into database 
         txtTimeSpent = new JTextField();
         txtTimeSpent.setToolTipText("Enter the time as an integer");
-        txtTimeSpent.setBounds(276, 425, 179, 19);
+        txtTimeSpent.setBounds(300, 425, 179, 19);
         txtTimeSpent.setColumns(10);
         panelAddProd.add(txtTimeSpent);
         
@@ -274,7 +274,7 @@ public class Products {
                 addProduct();
             }
         });
-        btnAddProd.setBounds(116, 466, 114, 21);
+        btnAddProd.setBounds(109, 466, 135, 21);
         panelAddProd.add(btnAddProd);
         
 		//A button to cancel adding a new product based on the associated fields
@@ -284,7 +284,7 @@ public class Products {
             	clearAddProductForm();
             }
         });
-        btnCancelProd.setBounds(287, 466, 135, 21);
+        btnCancelProd.setBounds(303, 466, 135, 21);
         panelAddProd.add(btnCancelProd);
         
         // A label that display to the user product category
@@ -296,7 +296,7 @@ public class Products {
         spinnerProductQuantity = new JSpinner();
         spinnerProductQuantity.setModel(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
         spinnerProductQuantity.setToolTipText("Enter the number of products if applicable");
-        spinnerProductQuantity.setBounds(276, 336, 179, 20);
+        spinnerProductQuantity.setBounds(300, 336, 179, 20);
         panelAddProd.add(spinnerProductQuantity);
         
         // *******************************************************************************************************
@@ -405,19 +405,19 @@ public class Products {
         
 		// The table that that will display the information to the user 
         JScrollPane scrollPaneList = new JScrollPane(tblList);
-        scrollPaneList.setBounds(108, 80, 555, 230);
+        scrollPaneList.setBounds(81, 80, 740, 230);
         panelDeleteProd.add(scrollPaneList);
         
 		// A label that will display to the user product id
         JLabel lblProductDelId = new JLabel("Product ID");
-        lblProductDelId.setBounds(141, 348, 90, 13);
+        lblProductDelId.setBounds(153, 348, 90, 13);
         panelDeleteProd.add(lblProductDelId);
         
 		// A textfield to allow user to input product id to remove a product
         txtProductDelId = new JTextField();
         txtProductDelId.setToolTipText("Enter the product id based on above");
         txtProductDelId.setColumns(10);
-        txtProductDelId.setBounds(315, 345, 269, 19);
+        txtProductDelId.setBounds(355, 345, 269, 19);
         panelDeleteProd.add(txtProductDelId);
         
 		// A button to delete a product with use of an associated textfield
@@ -447,7 +447,7 @@ public class Products {
                 }
             }
         });
-        btnDeleteProduct.setBounds(194, 401, 124, 21);
+        btnDeleteProduct.setBounds(194, 401, 135, 21);
         panelDeleteProd.add(btnDeleteProduct);
         
 		// A button to cancel the deletion of a product 
@@ -457,7 +457,7 @@ public class Products {
                 txtProductDelId.setText("");
             }
         });
-        btnCancelChanges.setBounds(378, 401, 135, 21);
+        btnCancelChanges.setBounds(392, 401, 135, 21);
         panelDeleteProd.add(btnCancelChanges);
         
 		// A button that will allow the user to return back to the home screen

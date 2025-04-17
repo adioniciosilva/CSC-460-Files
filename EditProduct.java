@@ -17,6 +17,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.awt.event.ActionEvent;
 import javax.swing.JSpinner;
+import javax.swing.border.LineBorder;
 
 public class EditProduct {
 	
@@ -139,6 +140,7 @@ public class EditProduct {
 
         // The main panel for the window
         JPanel editProductPanel = new JPanel();
+        editProductPanel.setBorder(new LineBorder(new Color(0, 0, 0)));
         editProductPanel.setBounds(24, 10, 437, 513);
         frmEditProduct.getContentPane().add(editProductPanel);
         editProductPanel.setLayout(null);
@@ -253,7 +255,7 @@ public class EditProduct {
         
 		// A button to save your edits to the product
         btnEditProduct = new JButton("Save Changes");
-        btnEditProduct.setBounds(63, 444, 127, 21);
+        btnEditProduct.setBounds(61, 444, 146, 21);
         editProductPanel.add(btnEditProduct);
         
 		// A button to cancel your edits to the product

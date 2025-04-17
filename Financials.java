@@ -474,14 +474,14 @@ public class Financials {
         	lblDisplayRevenue.setFont(new Font("Tahoma", Font.BOLD, 23)); 
             e.printStackTrace();
         }
-        lblProfitMargin.setBounds(225, 47, 199, 31);
+        lblProfitMargin.setBounds(253, 47, 199, 31);
         calculatorPanel.add(lblProfitMargin);
         
         // A spinner for product quantity inputs
         spinnerQuantitySold = new JSpinner();
         spinnerQuantitySold.setToolTipText("Enter the number of products that will be sold");
         spinnerQuantitySold.setModel(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
-        spinnerQuantitySold.setBounds(434, 107, 129, 20);
+        spinnerQuantitySold.setBounds(510, 107, 129, 20);
         calculatorPanel.add(spinnerQuantitySold);
 
         // A label that display to the user quantity sold
@@ -495,7 +495,7 @@ public class Financials {
         	lblQuantitySold.setFont(new Font("Tahoma", Font.BOLD, 23)); 
             e.printStackTrace();
         }
-        lblQuantitySold.setBounds(434, 47, 149, 31);
+        lblQuantitySold.setBounds(510, 47, 149, 31);
         calculatorPanel.add(lblQuantitySold);
         
 
@@ -503,7 +503,7 @@ public class Financials {
         txtMaterialCost = new JTextField();
         txtMaterialCost.setToolTipText("Enter the amount spent on material cost");
         txtMaterialCost.setColumns(10);
-        txtMaterialCost.setBounds(225, 107, 143, 19);
+        txtMaterialCost.setBounds(253, 107, 143, 19);
         calculatorPanel.add(txtMaterialCost);
        
 		// A textfield that will take the hours input 
