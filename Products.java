@@ -18,6 +18,7 @@ import javax.swing.SortOrder;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JComboBox;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
@@ -29,6 +30,9 @@ import java.awt.event.ActionEvent;
 import javax.swing.JScrollPane;
 import java.awt.Font;
 import java.awt.FontFormatException;
+import java.awt.Image;
+import java.awt.Toolkit;
+
 import javax.swing.JSpinner;
 import javax.swing.table.TableRowSorter; // Used for the table sorting
 import java.util.Collections; // Used for the table sorting
@@ -118,6 +122,11 @@ public class Products {
 		frmProducts.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmProducts.getContentPane().setBackground(new Color(216, 203, 175));
 		frmProducts.getContentPane().setLayout(null);
+		
+		// Allows a custom window icon
+		Image icon = Toolkit.getDefaultToolkit().getImage("images/bearLogo.png");
+		frmProducts.setIconImage(icon);
+		
 		
 		// The main panel for the panes, with each a represented tab
 		JTabbedPane mainPanel = new JTabbedPane(JTabbedPane.TOP);
@@ -336,6 +345,9 @@ public class Products {
         
 		// The table that that will display the information to the user 
         JScrollPane scrollPaneEditProduct = new JScrollPane(tblProducts);
+        scrollPaneEditProduct.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+        scrollPaneEditProduct.setViewportBorder(null);
+        scrollPaneEditProduct.setForeground(Color.WHITE);
         scrollPaneEditProduct.setBounds(10, 45, 879, 364);
         panelEditProd.add(scrollPaneEditProduct);
         
@@ -405,6 +417,9 @@ public class Products {
         
 		// The table that that will display the information to the user 
         JScrollPane scrollPaneList = new JScrollPane(tblList);
+        scrollPaneList.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+        scrollPaneList.setViewportBorder(null);
+        scrollPaneList.setForeground(Color.WHITE);
         scrollPaneList.setBounds(81, 80, 740, 230);
         panelDeleteProd.add(scrollPaneList);
         

@@ -4,6 +4,9 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Toolkit;
+
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -14,6 +17,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
 import java.awt.Color;
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -38,6 +42,9 @@ import javax.swing.JSpinner;
 import java.math.RoundingMode;
 import javax.swing.table.TableRowSorter; // Used for the table sorting
 import java.util.Collections; // Used for the table sorting
+import javax.swing.border.LineBorder;
+
+
 
 public class Financials {
 
@@ -124,36 +131,10 @@ public class Financials {
         frmFinancials.getContentPane().setBackground(new Color(216, 203, 175));
         frmFinancials.getContentPane().setLayout(null);
         
-        // Allows user to view a table with associated columns within the Financials tab
-        tblFinacials = new JTable();
-        tblFinacials.setModel(new DefaultTableModel(
-            new Object[][]{},
-            new String[] {"Product ID", "Product Name", "Material Costs", "Sale Date", "Quantity Sold", "Total Price"}    
-        ));
-       
-        // Disable editing in the table
-        tblFinacials.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tblFinacials.setDefaultEditor(Object.class, null);  // Disable editor for the entire table
-        tblFinacials.getTableHeader().setReorderingAllowed(false);
-        tblFinacials.getTableHeader().setResizingAllowed(false);
-        
-        // Will be used to allow sorting for the tables by ascending/descending order
-        TableRowSorter<DefaultTableModel> finacialsSorter = new TableRowSorter<>((DefaultTableModel) tblFinacials.getModel());
-        tblFinacials.setRowSorter(finacialsSorter);
-
-        // Will allow the sorting by column header
-        tblFinacials.getTableHeader().addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                int column = tblFinacials.columnAtPoint(evt.getPoint());
-                if (column >= 0) {
-                    // Get current sort order for the column
-                    boolean ascending = finacialsSorter.getSortKeys().isEmpty() || finacialsSorter.getSortKeys().get(0).getSortOrder() == SortOrder.DESCENDING;
-                    // Toggle between ascending and descending
-                    finacialsSorter.setSortKeys(Collections.singletonList(new RowSorter.SortKey(column, ascending ? SortOrder.ASCENDING : SortOrder.DESCENDING)));
-                }
-            }
-        });    
-        
+		// Allows a custom window icon
+		Image icon = Toolkit.getDefaultToolkit().getImage("images/bearLogo.png");
+		frmFinancials.setIconImage(icon);
+		
         // Allows user to view a table with associated columns within the Donations tab
         tblDonations = new JTable();
         tblDonations.setModel(new DefaultTableModel(
@@ -219,7 +200,7 @@ public class Financials {
         
 		// The main panel for the panes, with each a represented tab
         JTabbedPane mainPane = new JTabbedPane(JTabbedPane.TOP);
-        mainPane.setBounds(31, 59, 900, 560);
+        mainPane.setBounds(31, 59, 918, 570);
         frmFinancials.getContentPane().add(mainPane);
 
         
@@ -253,11 +234,6 @@ public class Financials {
 		lblFinancials.setBounds(31, 14, 200, 35);
 		frmFinancials.getContentPane().add(lblFinancials);
         
-
-        
-		// *******************************************************************************************************	        
-        // Financial Components
-        
 		// A button that will allow the user to return back to the home screen
         JButton btnHome = new JButton("Home");
         btnHome.addActionListener(new ActionListener() {
@@ -282,7 +258,49 @@ public class Financials {
         	lblDisplayRevenue.setFont(new Font("Tahoma", Font.BOLD, 23)); 
             e.printStackTrace();
         }
-        lblDisplayRevenue.setBounds(71, 420, 116, 21);
+        
+        // Allows user to view a table with associated columns within the Financials tab
+        tblFinacials = new JTable();
+        tblFinacials.setBorder(new LineBorder(new Color(64, 64, 64)));
+        tblFinacials.setModel(new DefaultTableModel(
+            new Object[][]{},
+            new String[] {"Product ID", "Product Name", "Material Costs", "Sale Date", "Quantity Sold", "Total Price"}    
+        ));
+        
+         // Disable editing in the table
+         tblFinacials.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+         tblFinacials.setDefaultEditor(Object.class, null);  // Disable editor for the entire table
+         tblFinacials.getTableHeader().setReorderingAllowed(false);
+         tblFinacials.getTableHeader().setResizingAllowed(false);
+         
+         // Will be used to allow sorting for the tables by ascending/descending order
+         TableRowSorter<DefaultTableModel> finacialsSorter = new TableRowSorter<>((DefaultTableModel) tblFinacials.getModel());
+         tblFinacials.setRowSorter(finacialsSorter);
+         
+                 // Will allow the sorting by column header
+                 tblFinacials.getTableHeader().addMouseListener(new java.awt.event.MouseAdapter() {
+                     public void mouseClicked(java.awt.event.MouseEvent evt) {
+                         int column = tblFinacials.columnAtPoint(evt.getPoint());
+                         if (column >= 0) {
+                             // Get current sort order for the column
+                             boolean ascending = finacialsSorter.getSortKeys().isEmpty() || finacialsSorter.getSortKeys().get(0).getSortOrder() == SortOrder.DESCENDING;
+                             // Toggle between ascending and descending
+                             finacialsSorter.setSortKeys(Collections.singletonList(new RowSorter.SortKey(column, ascending ? SortOrder.ASCENDING : SortOrder.DESCENDING)));
+                         }
+                     }
+                 });    
+                 
+		// The table that that will display the information to the user 
+        JScrollPane scrollPaneItems = new JScrollPane(tblFinacials);
+        scrollPaneItems.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+        scrollPaneItems.setViewportBorder(null);
+        scrollPaneItems.setForeground(Color.WHITE);
+        scrollPaneItems.setBounds(25, 75, 866, 300);
+        financialsPanel.add(scrollPaneItems);
+        
+        
+        
+        lblDisplayRevenue.setBounds(71, 420, 786, 21);
         financialsPanel.add(lblDisplayRevenue);
         
         // The label that will display the total profit price
@@ -296,7 +314,7 @@ public class Financials {
         	lblDisplayRevenue.setFont(new Font("Tahoma", Font.BOLD, 23)); 
             e.printStackTrace();
         }
-        lblDisplayProfit.setBounds(71, 502, 89, 21);
+        lblDisplayProfit.setBounds(71, 502, 786, 21);
         financialsPanel.add(lblDisplayProfit);
 
         
@@ -329,12 +347,6 @@ public class Financials {
         lblTotalRevenue.setBounds(71, 385, 116, 25);
         financialsPanel.add(lblTotalRevenue);	
         
-		// The table that that will display the information to the user 
-        JScrollPane scrollPaneItems = new JScrollPane(tblFinacials);
-        scrollPaneItems.setForeground(Color.WHITE);
-        scrollPaneItems.setBounds(25, 75, 866, 300);
-        financialsPanel.add(scrollPaneItems);
-        
 		// A textfield to allow user to input product name or type 
         JTextField txtSearchBox = new JTextField();
         txtSearchBox.setToolTipText("Please enter product name or type");
@@ -364,14 +376,31 @@ public class Financials {
         financialsPanel.add(btnReturn);
         btnReturn.setFont(new Font("Dialog", Font.BOLD, 12));
         
+
+        
+		// *******************************************************************************************************	        
+        // Financial Components
+		
+		// A panel for displaying the labels
+        JPanel viewPanel = new JPanel();
+        viewPanel.setBorder(new LineBorder(new Color(0, 0, 0)));
+        viewPanel.setBounds(25, 385, 866, 148);
+        financialsPanel.add(viewPanel);
+        viewPanel.setLayout(null);
+        
+
+        
+        
         
 		// *******************************************************************************************************	        
         // Donation Components     
         
 		// The table that that will display the information to the user 
         JScrollPane scrollPaneDonations = new JScrollPane(tblDonations);
-        scrollPaneDonations.setBounds(29, 79, 866, 335);
+        scrollPaneDonations.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+        scrollPaneDonations.setViewportBorder(null);
         scrollPaneDonations.setForeground(Color.WHITE);
+        scrollPaneDonations.setBounds(29, 79, 866, 335);
         donationPanel.add(scrollPaneDonations);
         
 		// A textfield to search for items along with the use of a button
@@ -410,6 +439,9 @@ public class Financials {
         
 		// The table that that will display the information to the user 
         JScrollPane scrollPaneInventory = new JScrollPane(tblInventory);
+        scrollPaneInventory.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+        scrollPaneInventory.setViewportBorder(null);
+        scrollPaneInventory.setForeground(Color.WHITE);
         scrollPaneInventory.setForeground(Color.WHITE);
         scrollPaneInventory.setBounds(29, 76, 856, 335);
         inventoryPanel.add(scrollPaneInventory);
@@ -442,11 +474,6 @@ public class Financials {
         txtSearchBoxInv.setToolTipText("Please enter product name or type");
         txtSearchBoxInv.setBounds(29, 38, 221, 21);
         inventoryPanel.add(txtSearchBoxInv);
-        
-        
-        
-		// *******************************************************************************************************	        
-        // Calculator Components
         
         // A label that will display to the user material cost
         // by: Jaiven Harris 
@@ -577,7 +604,7 @@ public class Financials {
                 calculatePrices();
             }
         });
-        btnCalculate.setBounds(39, 407, 107, 37);
+        btnCalculate.setBounds(39, 436, 107, 37);
         calculatorPanel.add(btnCalculate);
 
 		// A button to clear product price based on the associated fields
@@ -587,8 +614,20 @@ public class Financials {
         		 clearCalculator();
         	}
         });
-        btnClearCalculate.setBounds(203, 407, 107, 37);
+        btnClearCalculate.setBounds(203, 436, 107, 37);
         calculatorPanel.add(btnClearCalculate);
+        
+        
+        
+		// *******************************************************************************************************	        
+        // Calculator Components
+        
+		// A panel for displaying the labels
+        JPanel calculatorViewPanel = new JPanel();
+        calculatorViewPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+        calculatorViewPanel.setBounds(20, 47, 806, 350);
+        calculatorPanel.add(calculatorViewPanel);
+        
 
         // A button to print the screen as a png
         JButton btnPrintReport = new JButton("Print Report");
@@ -1071,6 +1110,10 @@ public class Financials {
  // Function that will calculate recommended prices based on input values
     private void calculatePrices() {
         try {
+            // Clear previous results first
+            lblDisplayRecommended.setText("$0.00");
+            lblDisplayAdjusted.setText("$0.00");
+            
             // Will get the input values
             BigDecimal materialCost = new BigDecimal(txtMaterialCost.getText());
             int quantity = (Integer) spinnerQuantitySold.getValue();
@@ -1171,5 +1214,4 @@ public class Financials {
             JOptionPane.showMessageDialog(frmFinancials, "Error exporting report: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
 }

@@ -1,6 +1,8 @@
 // Packages to import for the java project
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -17,7 +19,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.awt.event.ActionEvent;
 import javax.swing.JSpinner;
-import javax.swing.border.LineBorder;
+import javax.swing.border.MatteBorder;
 
 public class EditProduct {
 	
@@ -137,10 +139,15 @@ public class EditProduct {
         frmEditProduct.getContentPane().setLayout(null);
         frmEditProduct.setBounds(100, 100, 500, 600);
         frmEditProduct.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        
+		// Allows a custom window icon
+		Image icon = Toolkit.getDefaultToolkit().getImage("images/bearLogo.png");
+		frmEditProduct.setIconImage(icon);
 
         // The main panel for the window
         JPanel editProductPanel = new JPanel();
-        editProductPanel.setBorder(new LineBorder(new Color(0, 0, 0)));
+        editProductPanel.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
         editProductPanel.setBounds(24, 10, 437, 513);
         frmEditProduct.getContentPane().add(editProductPanel);
         editProductPanel.setLayout(null);

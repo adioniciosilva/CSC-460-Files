@@ -10,13 +10,15 @@ import javax.swing.*;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.awt.event.ActionEvent;
 import javax.swing.table.TableRowSorter; // Used for the table sorting
-import java.util.Collections;
-import javax.swing.border.LineBorder; // Used for the table sorting
+import java.util.Collections; // Used for the table sorting
+import javax.swing.border.MatteBorder; 
 
 public class Dashboard {
 
@@ -123,6 +125,10 @@ public class Dashboard {
 		frmDashboard.setBounds(100, 100, 600, 600);
 		frmDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
+		// Allows a custom window icon
+		Image icon = Toolkit.getDefaultToolkit().getImage("images/bearLogo.png");
+		frmDashboard.setIconImage(icon);
+		
 		// The label that will display the title of the page	
         // by: Jaiven Harris 
         JLabel lblNewLabel = new JLabel("MaMa's Piddlin");
@@ -135,19 +141,22 @@ public class Dashboard {
         	lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 23)); 
             e.printStackTrace();
         }
-        lblNewLabel.setBounds(150, 10, 305, 37);
+        lblNewLabel.setBounds(153, 35, 279, 37);
         frmDashboard.getContentPane().add(lblNewLabel);		
 			
 		// The table that that will display the information to the user 
 		JScrollPane scrollPaneItems = new JScrollPane(tblItems);
-		scrollPaneItems.setForeground(new Color(255, 255, 255));
-		scrollPaneItems.setBounds(10, 200, 550, 333);
+        scrollPaneItems.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+        scrollPaneItems.setViewportBorder(null);
+        scrollPaneItems.setForeground(Color.WHITE);
+        scrollPaneItems.setForeground(new Color(255, 255, 255));
+		scrollPaneItems.setBounds(10, 215, 550, 333);
 		frmDashboard.getContentPane().add(scrollPaneItems);
 		
 		// A textfield to search for items along with the use of a button
 		JTextField txtSearchBox = new JTextField();
 		txtSearchBox.setToolTipText("Please enter product name or type");
-		txtSearchBox.setBounds(10, 150, 183, 21);
+		txtSearchBox.setBounds(10, 170, 183, 21);
 		frmDashboard.getContentPane().add(txtSearchBox);
 		
 		// The button to search for items along with the use of a textfield
@@ -158,13 +167,13 @@ public class Dashboard {
 			}
 		});
 		btnSearch.setFont(new Font("Dialog", Font.BOLD, 12));
-		btnSearch.setBounds(203, 149, 90, 21);
+		btnSearch.setBounds(203, 170, 90, 21);
 		frmDashboard.getContentPane().add(btnSearch);
 
 		// The background to the navigation bar
 		JPanel navigationPanel = new JPanel();
-		navigationPanel.setBorder(new LineBorder(new Color(0, 0, 0)));
-		navigationPanel.setBounds(51, 60, 466, 52);
+		navigationPanel.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
+		navigationPanel.setBounds(51, 90, 466, 52);
 		frmDashboard.getContentPane().add(navigationPanel);
 		navigationPanel.setLayout(null);
 		
@@ -214,8 +223,9 @@ public class Dashboard {
 			}
 		});
 		btnReturn.setFont(new Font("Dialog", Font.BOLD, 12));
-		btnReturn.setBounds(303, 149, 89, 21);
+		btnReturn.setBounds(303, 170, 89, 21);
 		frmDashboard.getContentPane().add(btnReturn);
+	
 		
 		// Loads all products when dashboard is loaded
 		viewProducts();

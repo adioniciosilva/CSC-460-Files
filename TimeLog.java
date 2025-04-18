@@ -15,9 +15,13 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import java.awt.Font;
 import java.awt.FontFormatException;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
@@ -25,8 +29,8 @@ import java.awt.event.ActionEvent;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.table.TableRowSorter; // Used for the table sorting
-import java.util.Collections;
-import javax.swing.border.LineBorder; // Used for the table sorting
+import java.util.Collections; // Used for the table sorting
+import javax.swing.border.MatteBorder; 
 
 public class TimeLog {
 
@@ -132,7 +136,9 @@ public class TimeLog {
 		frmTimeLog.getContentPane().setBackground(new Color(216, 203, 175));
 		frmTimeLog.getContentPane().setLayout(null);
 		
-	
+		// Allows a custom window icon
+		Image icon = Toolkit.getDefaultToolkit().getImage("images/bearLogo.png");
+		frmTimeLog.setIconImage(icon);
 		
 		// The label that will display the title of the page
         // by: Jaiven Harris 
@@ -151,6 +157,8 @@ public class TimeLog {
 		
 		// Will use a table to display information to the user based on time
 		JScrollPane scrollPaneTime = new JScrollPane(tblTime);
+		scrollPaneTime.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+		scrollPaneTime.setViewportBorder(null);
 		scrollPaneTime.setForeground(Color.WHITE);
 		scrollPaneTime.setBounds(41, 180, 600, 403);
 		frmTimeLog.getContentPane().add(scrollPaneTime);
@@ -174,7 +182,7 @@ public class TimeLog {
 		
 		// A background panel that will be used for decoration for the page
 		JPanel backgroundPanel = new JPanel();
-		backgroundPanel.setBorder(new LineBorder(new Color(0, 0, 0)));
+		backgroundPanel.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(0, 0, 0)));
 		backgroundPanel.setBounds(29, 100, 627, 507);
 		frmTimeLog.getContentPane().add(backgroundPanel);
 		backgroundPanel.setLayout(null);
