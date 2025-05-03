@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>C:\Users\adria\OneDrive\Desktop\Mama Piddlin\mamaspiddlin.jar</jar>
+  <outfile>C:\Users\adria\OneDrive\Desktop\Mama Piddlin\MamaPiddlin.exe</outfile>
+  <errTitle>Oops! Mama Piddlin Couldn&apos;t Start</errTitle>
+  <cmdLine></cmdLine>
+  <chdir>.</chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl>https://github.com/adioniciosilva/CSC-460-Files/tree/main-SQLite</supportUrl>
+  <stayAlive>false</stayAlive>
+  <restartOnCrash>true</restartOnCrash>
+  <manifest></manifest>
+  <icon>C:\Users\adria\OneDrive\Desktop\Mama Piddlin\icons\bearlogoIcon.ico</icon>
+  <singleInstance>
+    <mutexName>MamaPiddlinMutex</mutexName>
+    <windowTitle>MamaPiddlin</windowTitle>
+  </singleInstance>
+  <classPath>
+    <mainClass>Dashboard</mainClass>
+    <cp>Dashboard</cp>
+  </classPath>
+  <jre>
+    <path>bin\jdk-22</path>
+    <requiresJdk>false</requiresJdk>
+    <requires64Bit>false</requires64Bit>
+    <minVersion></minVersion>
+    <maxVersion></maxVersion>
+  </jre>
+  <splash>
+    <file>C:\Users\adria\OneDrive\Desktop\Mama Piddlin\icons\bearLogoBMP.bmp</file>
+    <waitForWindow>true</waitForWindow>
+    <timeout>60</timeout>
+    <timeoutErr>true</timeoutErr>
+  </splash>
+  <versionInfo>
+    <fileVersion>0.0.0.1</fileVersion>
+    <txtFileVersion>-Dfile.encoding=UTF-8 -Xms256m -Xmx512m</txtFileVersion>
+    <fileDescription>MamaPiddlin Java Application</fileDescription>
+    <copyright>© 2025 LR Team</copyright>
+    <productVersion>0.0.0.1</productVersion>
+    <txtProductVersion>-Dfile.encoding=UTF-8 -Xms256m -Xmx512m</txtProductVersion>
+    <productName>MamaPiddlin</productName>
+    <companyName>LR Team</companyName>
+    <internalName>MamaPiddlin</internalName>
+    <originalFilename>MamaPiddlin.exe</originalFilename>
+    <trademarks></trademarks>
+    <language>ENGLISH_US</language>
+  </versionInfo>
+  <messages>
+    <startupErr>An error occurred while starting the application.</startupErr>
+    <jreNotFoundErr>This application requires a Java Runtime Environment.</jreNotFoundErr>
+    <jreVersionErr>This application requires a Java Runtime Environment</jreVersionErr>
+    <launcherErr>The registry refers to a nonexistent Java Runtime Environment installation or the runtime is corrupted.</launcherErr>
+    <instanceAlreadyExistsMsg>An application instance is already running.</instanceAlreadyExistsMsg>
+  </messages>
+</launch4jConfig>
