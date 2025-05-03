@@ -219,6 +219,7 @@ public class Dashboard {
 		JButton btnReturn = new JButton("Reset");
 		btnReturn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+		        txtSearchBox.setText(""); // Will clear the search textbox
 				viewProducts();
 			}
 		});

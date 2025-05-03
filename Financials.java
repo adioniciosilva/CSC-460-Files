@@ -369,6 +369,7 @@ public class Financials {
         JButton btnReturn = new JButton("Reset");
         btnReturn.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
+		        txtSearchBox.setText(""); // Clear the search textbox
                 viewFinancials(); 
         	}
         });
@@ -426,6 +427,7 @@ public class Financials {
         JButton btnReturnDon = new JButton("Reset");
         btnReturnDon.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
+        		txtSearchBoxDon.setText("");
         		viewDonations();
         	}
         });
@@ -451,6 +453,7 @@ public class Financials {
         JButton btnReturnInv = new JButton("Reset");
         btnReturnInv.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
+        		txtSearchBoxInv.setText("");
         		viewInventory();
         	}
         });
@@ -649,8 +652,7 @@ public class Financials {
     private void searchFinancials(String searchTerm) {
 	    // Checks if the input is empty, and displays message to user
         if (searchTerm == null || searchTerm.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(frmFinancials, "Search bar cannot be empty.", 
-                                        "Validation Error", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(frmFinancials, "Search bar cannot be empty. Please enter a valid value.", "Validation Error", JOptionPane.WARNING_MESSAGE);
             viewFinancials();
             return;
         }
@@ -860,8 +862,7 @@ public class Financials {
     private void searchDonations(String searchTerm) {
 	    // Checks if the input is empty, and displays message to user
         if (searchTerm == null || searchTerm.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(frmFinancials, "Search bar cannot be empty.", 
-                                        "Validation Error", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(frmFinancials, "Search bar cannot be empty. Please enter a valid value.", "Validation Error", JOptionPane.WARNING_MESSAGE);
             viewDonations();
             return;
         }
@@ -1136,10 +1137,10 @@ public class Financials {
             }
 
             // Will calculate labor cost based on hours * hourly rate
-            BigDecimal laborCost = hoursSpent.multiply(hourlyRate);
+            BigDecimal laborCost = materialCost.multiply(hourlyRate);
 
             // Will calculate total cost based on materials + labor
-            BigDecimal totalCost = materialCost.add(laborCost);
+            BigDecimal totalCost = hoursSpent.add(laborCost);
 
             // Will calculate price per unit based on total cost / quantity
             BigDecimal pricePerUnit = totalCost.divide(
@@ -1171,6 +1172,7 @@ public class Financials {
                 "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
 
     
 

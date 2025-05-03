@@ -192,6 +192,7 @@ public class TimeLog {
 		JButton btnReturn = new JButton("Reset");
 		btnReturn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				txtSearchTimeLog.setText("");
 				viewTimeLog();
 			}
 		});
